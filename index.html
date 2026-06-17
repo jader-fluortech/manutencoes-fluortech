@@ -1075,7 +1075,9 @@
       htmlContent: htmlEmail,
       attachment: [{
         name: nomeArq,
-        content: pdfBase64
+        content: pdfBase64,
+        type: 'application/pdf',
+        disposition: 'attachment'
       }]
     };
 
