@@ -22,7 +22,7 @@
     body { font-family: 'Segoe UI', Arial, sans-serif; background-color: var(--cor-fundo-tela); color: var(--cor-texto); min-height: 100vh; }
 
     header { background: var(--cor-fundo-card); border-bottom: 3px solid var(--cor-destaque); padding: 16px 24px; display: flex; align-items: center; gap: 14px; }
-    header .logo-icon { width: 42px; height: 42px; background: var(--cor-destaque); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+    header .logo-header { display: flex; align-items: center; }
     header h1 { font-size: 1.2rem; font-weight: 700; color: var(--cor-texto); line-height: 1.2; }
     header p { font-size: 0.75rem; color: #444; margin-top: 2px; }
     header .header-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
@@ -204,10 +204,12 @@
 <body>
 
 <header>
-  <div class="logo-icon">⚙️</div>
+  <div class="logo-header">
+    <img src="logo.png" alt="Fluortech" style="height:36px;display:block;" />
+  </div>
   <div>
-    <h1>Manutenção Fluortech</h1>
-    <p>Sistema de Registro de Manutenções</p>
+    <h1>Sistema de Manutenções</h1>
+    <p>Registro e controle de manutenções industriais</p>
   </div>
   <div class="header-right" id="header-right" style="display:none">
     <span class="badge-perfil" id="badge-perfil"></span>
@@ -220,8 +222,8 @@
   <div class="login-wrapper">
     <div class="login-box">
       <div class="login-logo">
-        <span class="icone">⚙️</span>
-        <h2>Manutenção Fluortech</h2>
+        <img src="logo.png" alt="Fluortech" style="height:48px;margin-bottom:16px;display:block;margin-left:auto;margin-right:auto;" />
+        <h2>Sistema de Manutenções</h2>
         <p>Selecione seu perfil e insira a senha</p>
       </div>
 
