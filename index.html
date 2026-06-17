@@ -862,6 +862,17 @@
     try {
       await window._addDoc(window._collection(window._db, 'manutencoes'), registro);
       dadosSalvos = registro;
+
+      // Enviar email com PDF em anexo
+      btn.textContent = '📧 Enviando email...';
+      try {
+        await enviarEmailComPDF();
+        mostrarToast('✅ Salvo e email enviado com sucesso!');
+      } catch (emailErr) {
+        console.error('Erro email:', emailErr);
+        mostrarToast('⚠️ Salvo! Mas falha ao enviar email.');
+      }
+
       exibirSucesso();
       btn.disabled = false;
       btn.textContent = '✅ Finalizar e Salvar';
@@ -885,8 +896,17 @@
     irPara('tela-sucesso');
   }
 
+  // ===== CONFIGURAÇÃO EMAIL =====
+  const BREVO_API_KEY = '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';
+  const EMAILS_DESTINO = [
+    'jaderfilho@fluortech.com.br'
+    // Para adicionar mais emails, inclua abaixo assim:
+    // 'outro@fluortech.com.br',
+    // 'mais@fluortech.com.br',
+  ];
+
   // ===== PDF =====
-  function baixarPDF() {
+  function gerarPDFBase64() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({ unit: 'mm', format: 'a4' });
     const d = dadosSalvos;
@@ -984,8 +1004,94 @@
     doc.setFont('helvetica', 'italic');
     doc.text(`Fluortech Manutenções · ${d.dataHoraLocal} · Técnico: ${d.tecnicoNome}`, 14, y);
 
+    return doc;
+  }
+
+  function baixarPDF() {
+    const doc = gerarPDFBase64();
+    const d = dadosSalvos;
     const nomeArq = `manutencao_${d.maquinaNome.replace(/\s/g,'_')}_${new Date().toLocaleDateString('pt-BR').replace(/\//g,'-')}.pdf`;
     doc.save(nomeArq);
+  }
+
+  async function enviarEmailComPDF() {
+    const d = dadosSalvos;
+    const nok = d.itens.filter(i => i.resultado === 'NOK').length;
+    const doc = gerarPDFBase64();
+    const nomeArq = `manutencao_${d.maquinaNome.replace(/\s/g,'_')}_${d.dataHoraLocal.replace(/[\/\s:,]/g,'-')}.pdf`;
+    const pdfBase64 = doc.output('datauristring').split(',')[1];
+
+    const itensHtml = d.itens.map((item, i) => `
+      <tr style="background:${i % 2 === 0 ? '#f9f9f9' : '#fff'}">
+        <td style="padding:6px 10px;font-size:13px">${i + 1}. ${item.texto}</td>
+        <td style="padding:6px 10px;font-weight:bold;color:${item.resultado === 'OK' ? '#4CAF50' : '#E53935'};text-align:center">${item.resultado}</td>
+        ${item.observacao ? `<td style="padding:6px 10px;font-size:12px;color:#888;font-style:italic">${item.observacao}</td>` : '<td></td>'}
+      </tr>
+    `).join('');
+
+    const htmlEmail = `
+      <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto">
+        <div style="background:#2C2C2C;padding:20px;border-bottom:3px solid #F5A623">
+          <h2 style="color:#F5A623;margin:0">⚙️ Manutenção Fluortech</h2>
+          <p style="color:#aaa;margin:4px 0 0">Relatório de Manutenção</p>
+        </div>
+        <div style="padding:20px;background:#fff">
+          <table style="width:100%;border-collapse:collapse;margin-bottom:20px">
+            <tr><td style="padding:6px 0;color:#666;width:140px">Máquina</td><td style="font-weight:bold">${d.maquinaNome}</td></tr>
+            <tr><td style="padding:6px 0;color:#666">Setor</td><td>${d.maquinaSetor || '-'}</td></tr>
+            <tr><td style="padding:6px 0;color:#666">Técnico</td><td>${d.tecnicoNome}</td></tr>
+            <tr><td style="padding:6px 0;color:#666">Tipo</td><td>${d.tipoManutencao}</td></tr>
+            <tr><td style="padding:6px 0;color:#666">Data/Hora</td><td>${d.dataHoraLocal}</td></tr>
+            ${d.obsInicial ? `<tr><td style="padding:6px 0;color:#666">Obs. iniciais</td><td>${d.obsInicial}</td></tr>` : ''}
+          </table>
+          <div style="background:#f0f8f0;border-left:4px solid #4CAF50;padding:10px 14px;margin-bottom:8px">
+            ✔ <strong>${d.itens.length - nok} itens OK</strong>
+          </div>
+          ${nok > 0 ? `<div style="background:#fff0f0;border-left:4px solid #E53935;padding:10px 14px;margin-bottom:20px">✘ <strong>${nok} itens NOK — verifique o PDF em anexo</strong></div>` : ''}
+          <table style="width:100%;border-collapse:collapse;border:1px solid #eee">
+            <thead>
+              <tr style="background:#2C2C2C">
+                <th style="padding:8px 10px;color:#F5A623;text-align:left">Item</th>
+                <th style="padding:8px 10px;color:#F5A623;text-align:center">Resultado</th>
+                <th style="padding:8px 10px;color:#F5A623;text-align:left">Observação</th>
+              </tr>
+            </thead>
+            <tbody>${itensHtml}</tbody>
+          </table>
+        </div>
+        <div style="background:#f5f5f5;padding:14px 20px;font-size:12px;color:#aaa;text-align:center">
+          O PDF completo com assinatura está em anexo neste email.<br>
+          Fluortech Manutenções · ${d.dataHoraLocal}
+        </div>
+      </div>
+    `;
+
+    const destinatarios = EMAILS_DESTINO.map(email => ({ email }));
+
+    const payload = {
+      sender: { name: 'Manutenção Fluortech', email: 'jaderfilho@fluortech.com.br' },
+      to: destinatarios,
+      subject: `✅ Manutenção ${d.maquinaNome} | ${d.maquinaSetor} | ${d.tecnicoNome} | ${d.dataHoraLocal}`,
+      htmlContent: htmlEmail,
+      attachment: [{
+        name: nomeArq,
+        content: pdfBase64
+      }]
+    };
+
+    const resp = await fetch('https://api.brevo.com/v3/smtp/email', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'api-key': BREVO_API_KEY
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (!resp.ok) {
+      const err = await resp.json();
+      throw new Error(err.message || 'Erro ao enviar email');
+    }
   }
 
   // ===== RESET =====
@@ -1020,6 +1126,7 @@
   window.baixarPDF = baixarPDF;
   window.novaManutencao = novaManutencao;
   window.carregarMaquinas = carregarMaquinas;
+  window.enviarEmailComPDF = enviarEmailComPDF;
 </script>
 
 </body>
