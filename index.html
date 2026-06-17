@@ -253,7 +253,7 @@
 <!-- ===== TELA SELEÇÃO DE MÁQUINA ===== -->
 <div id="tela-maquinas" class="tela">
   <div class="container">
-    <div class="instrucao">📋 Selecione a máquina.</div>
+    <div class="instrucao">📋 Selecione a máquina que será manutenida hoje.</div>
     <div class="busca-wrapper">
       <span class="icone-busca">🔍</span>
       <input type="text" id="busca-maquina" placeholder="Buscar máquina..." oninput="filtrarMaquinas()" />
@@ -345,6 +345,28 @@
 
     <div class="filtros-painel">
       <input type="text" id="filtro-busca" placeholder="🔍 Buscar por máquina ou técnico..." oninput="filtrarPainel()" />
+      <select id="filtro-mes" onchange="filtrarPainel()">
+        <option value="">Todos os meses</option>
+        <option value="01">Janeiro</option>
+        <option value="02">Fevereiro</option>
+        <option value="03">Março</option>
+        <option value="04">Abril</option>
+        <option value="05">Maio</option>
+        <option value="06">Junho</option>
+        <option value="07">Julho</option>
+        <option value="08">Agosto</option>
+        <option value="09">Setembro</option>
+        <option value="10">Outubro</option>
+        <option value="11">Novembro</option>
+        <option value="12">Dezembro</option>
+      </select>
+      <select id="filtro-ano" onchange="filtrarPainel()">
+        <option value="">Todos os anos</option>
+        <option value="2025">2025</option>
+        <option value="2026">2026</option>
+        <option value="2027">2027</option>
+        <option value="2028">2028</option>
+      </select>
       <select id="filtro-tipo" onchange="filtrarPainel()">
         <option value="">Todos os tipos</option>
         <option value="Preventiva">Preventiva</option>
@@ -864,13 +886,27 @@
 
   function filtrarPainel() {
     const busca = document.getElementById('filtro-busca').value.toLowerCase();
+    const mes = document.getElementById('filtro-mes').value;
+    const ano = document.getElementById('filtro-ano').value;
     const tipo = document.getElementById('filtro-tipo').value;
     const setor = document.getElementById('filtro-setor').value;
     const filtrados = todosRegistros.filter(r => {
       const matchBusca = !busca || (r.maquinaNome || '').toLowerCase().includes(busca) || (r.tecnicoNome || '').toLowerCase().includes(busca);
       const matchTipo = !tipo || r.tipoManutencao === tipo;
       const matchSetor = !setor || r.maquinaSetor === setor;
-      return matchBusca && matchTipo && matchSetor;
+      // Data no formato dd/mm/aaaa, hh:mm:ss
+      let matchMes = true;
+      let matchAno = true;
+      if (mes || ano) {
+        const partes = (r.dataHoraLocal || '').split('/');
+        if (partes.length >= 3) {
+          const mesDado = partes[1].padStart(2, '0');
+          const anoDado = partes[2].split(',')[0].trim();
+          if (mes) matchMes = mesDado === mes;
+          if (ano) matchAno = anoDado === ano;
+        }
+      }
+      return matchBusca && matchTipo && matchSetor && matchMes && matchAno;
     });
     renderizarTabela(filtrados);
   }
