@@ -1016,7 +1016,7 @@
         r.tipoManutencao || '',
         total, ok, nok,
         r.obsInicial || ''
-      ].map(v => `"${String(v).replace(/"/g,'""')}"`).join(',');
+      ].map(v => '"' + String(v).replace(/"/g, '""') + '"').join(',');
     });
 
     const csv = '﻿' + [cabecalho.join(','), ...linhas].join('
