@@ -850,8 +850,14 @@
     const comNok = lista.filter(r => r.itens && r.itens.some(i => i.resultado === 'NOK')).length;
     const maquinasUnicas = new Set(lista.map(r => r.maquinaId)).size;
 
-    // Total — filtrado por ano se selecionado
-    document.getElementById('stat-total').textContent = lista.length;
+    // Total — ignorar filtro de mês, contar apenas por ano
+    const totalPorAno = ano
+      ? todosRegistros.filter(r => {
+          const partes = (r.dataHoraLocal || '').split('/');
+          return partes.length >= 3 && partes[2].split(',')[0].trim() === ano;
+        }).length
+      : todosRegistros.length;
+    document.getElementById('stat-total').textContent = totalPorAno;
     document.getElementById('label-total').textContent = ano ? `Total em ${ano}` : 'Total de Manutenções';
 
     // Mês — filtrado por mês se selecionado
