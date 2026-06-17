@@ -253,7 +253,7 @@
 <!-- ===== TELA SELEÇÃO DE MÁQUINA ===== -->
 <div id="tela-maquinas" class="tela">
   <div class="container">
-    <div class="instrucao">📋 Selecione a máquina que será manutenida hoje.</div>
+    <div class="instrucao">📋 Selecione a máquina.</div>
     <div class="busca-wrapper">
       <span class="icone-busca">🔍</span>
       <input type="text" id="busca-maquina" placeholder="Buscar máquina..." oninput="filtrarMaquinas()" />
@@ -337,10 +337,10 @@
     <h2 style="font-size:1.2rem;margin-bottom:20px;color:var(--cor-destaque)">📊 Painel do Gestor</h2>
 
     <div class="painel-stats" id="painel-stats">
-      <div class="stat-card"><div class="stat-numero" id="stat-total">—</div><div class="stat-label">Total de Manutenções</div></div>
-      <div class="stat-card"><div class="stat-numero" id="stat-mes">—</div><div class="stat-label">Este Mês</div></div>
-      <div class="stat-card"><div class="stat-numero" id="stat-nok" style="color:var(--cor-nok)">—</div><div class="stat-label">Com Itens NOK</div></div>
-      <div class="stat-card"><div class="stat-numero" id="stat-maquinas">—</div><div class="stat-label">Máquinas Atendidas</div></div>
+      <div class="stat-card"><div class="stat-numero" id="stat-total">—</div><div class="stat-label" id="label-total">Total de Manutenções</div></div>
+      <div class="stat-card"><div class="stat-numero" id="stat-mes">—</div><div class="stat-label" id="label-mes">No Mês</div></div>
+      <div class="stat-card"><div class="stat-numero" id="stat-nok" style="color:var(--cor-nok)">—</div><div class="stat-label" id="label-nok">Com Itens NOK</div></div>
+      <div class="stat-card"><div class="stat-numero" id="stat-maquinas">—</div><div class="stat-label" id="label-maquinas">Máquinas Atendidas</div></div>
     </div>
 
     <div class="filtros-painel">
@@ -383,6 +383,9 @@
       </select>
     </div>
 
+    <div style="display:flex;justify-content:flex-end;margin-bottom:12px">
+      <button class="btn-mini" onclick="exportarExcel()" style="padding:8px 16px;font-size:0.88rem;background:var(--cor-destaque);color:#fff;border:none;border-radius:8px;cursor:pointer">📊 Exportar Excel</button>
+    </div>
     <div class="tabela-wrapper">
       <table class="tabela-manutencoes">
         <thead>
@@ -839,22 +842,44 @@
     }
   }
 
-  function atualizarStats() {
-    const agora = new Date();
-    const mesAtual = agora.getMonth();
-    const anoAtual = agora.getFullYear();
-    const comNok = todosRegistros.filter(r => r.itens && r.itens.some(i => i.resultado === 'NOK')).length;
-    const doMes = todosRegistros.filter(r => {
-      if (!r.dataHoraLocal) return false;
-      const partes = r.dataHoraLocal.split('/');
-      if (partes.length < 3) return false;
-      return parseInt(partes[1]) - 1 === mesAtual && parseInt(partes[2]) === anoAtual;
-    }).length;
-    const maquinasUnicas = new Set(todosRegistros.map(r => r.maquinaId)).size;
-    document.getElementById('stat-total').textContent = todosRegistros.length;
-    document.getElementById('stat-mes').textContent = doMes;
+  function atualizarStats(lista) {
+    if (!lista) lista = todosRegistros;
+    const mes = document.getElementById('filtro-mes') ? document.getElementById('filtro-mes').value : '';
+    const ano = document.getElementById('filtro-ano') ? document.getElementById('filtro-ano').value : '';
+
+    const comNok = lista.filter(r => r.itens && r.itens.some(i => i.resultado === 'NOK')).length;
+    const maquinasUnicas = new Set(lista.map(r => r.maquinaId)).size;
+
+    // Total — filtrado por ano se selecionado
+    document.getElementById('stat-total').textContent = lista.length;
+    document.getElementById('label-total').textContent = ano ? `Total em ${ano}` : 'Total de Manutenções';
+
+    // Mês — filtrado por mês se selecionado
+    const nomesMeses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+    if (mes) {
+      const doMes = lista.filter(r => {
+        const partes = (r.dataHoraLocal || '').split('/');
+        return partes.length >= 2 && partes[1].padStart(2,'0') === mes;
+      }).length;
+      document.getElementById('stat-mes').textContent = doMes;
+      document.getElementById('label-mes').textContent = `Em ${nomesMeses[parseInt(mes)-1]}`;
+    } else {
+      const agora = new Date();
+      const mesAtualStr = String(agora.getMonth() + 1).padStart(2,'0');
+      const anoAtual = String(agora.getFullYear());
+      const doMesAtual = lista.filter(r => {
+        const partes = (r.dataHoraLocal || '').split('/');
+        if (partes.length < 3) return false;
+        return partes[1].padStart(2,'0') === mesAtualStr && partes[2].split(',')[0].trim() === anoAtual;
+      }).length;
+      document.getElementById('stat-mes').textContent = doMesAtual;
+      document.getElementById('label-mes').textContent = 'No Mês';
+    }
+
     document.getElementById('stat-nok').textContent = comNok;
+    document.getElementById('label-nok').textContent = 'Com Itens NOK';
     document.getElementById('stat-maquinas').textContent = maquinasUnicas;
+    document.getElementById('label-maquinas').textContent = 'Máquinas Atendidas';
   }
 
   function renderizarTabela(lista) {
@@ -908,6 +933,7 @@
       }
       return matchBusca && matchTipo && matchSetor && matchMes && matchAno;
     });
+    atualizarStats(filtrados);
     renderizarTabela(filtrados);
   }
 
@@ -951,6 +977,59 @@
     registroModal = null;
   }
 
+  // ===== EXPORTAR EXCEL =====
+  function exportarExcel() {
+    const mes = document.getElementById('filtro-mes').value;
+    const ano = document.getElementById('filtro-ano').value;
+    const tipo = document.getElementById('filtro-tipo').value;
+    const setor = document.getElementById('filtro-setor').value;
+    const busca = document.getElementById('filtro-busca').value.toLowerCase();
+
+    const filtrados = todosRegistros.filter(r => {
+      const matchBusca = !busca || (r.maquinaNome || '').toLowerCase().includes(busca) || (r.tecnicoNome || '').toLowerCase().includes(busca);
+      const matchTipo = !tipo || r.tipoManutencao === tipo;
+      const matchSetor = !setor || r.maquinaSetor === setor;
+      let matchMes = true, matchAno = true;
+      if (mes || ano) {
+        const partes = (r.dataHoraLocal || '').split('/');
+        if (partes.length >= 3) {
+          if (mes) matchMes = partes[1].padStart(2,'0') === mes;
+          if (ano) matchAno = partes[2].split(',')[0].trim() === ano;
+        }
+      }
+      return matchBusca && matchTipo && matchSetor && matchMes && matchAno;
+    });
+
+    if (filtrados.length === 0) { mostrarToast('Nenhum registro para exportar.'); return; }
+
+    // Montar CSV
+    const cabecalho = ['Data/Hora','Máquina','Setor','Técnico','Tipo','Total Itens','Itens OK','Itens NOK','Obs. Iniciais'];
+    const linhas = filtrados.map(r => {
+      const nok = r.itens ? r.itens.filter(i => i.resultado === 'NOK').length : 0;
+      const ok = r.itens ? r.itens.filter(i => i.resultado === 'OK').length : 0;
+      const total = r.itens ? r.itens.length : 0;
+      return [
+        r.dataHoraLocal || '',
+        r.maquinaNome || '',
+        r.maquinaSetor || '',
+        r.tecnicoNome || '',
+        r.tipoManutencao || '',
+        total, ok, nok,
+        r.obsInicial || ''
+      ].map(v => `"${String(v).replace(/"/g,'""')}"`).join(',');
+    });
+
+    const csv = '﻿' + [cabecalho.join(','), ...linhas].join('
+');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const nomeArq = `manutencoes_fluortech_${ano || 'todos'}_${mes || 'todos'}.csv`;
+    a.href = url; a.download = nomeArq; a.click();
+    URL.revokeObjectURL(url);
+    mostrarToast(`✅ ${filtrados.length} registros exportados!`);
+  }
+
   // ===== RESET =====
   function novaManutencao() {
     maquinaSelecionada = null; respostas = {}; dadosSalvos = null;
@@ -986,6 +1065,7 @@
   window.novaManutencao = novaManutencao;
   window.carregarMaquinas = carregarMaquinas;
   window.filtrarPainel = filtrarPainel;
+  window.exportarExcel = exportarExcel;
   window.abrirModal = abrirModal;
   window.fecharModal = fecharModal;
 </script>
