@@ -1008,7 +1008,8 @@
 
     if (filtrados.length === 0) { mostrarToast('Nenhum registro para exportar.'); return; }
 
-    // Montar CSV
+    // Montar CSV com separador ponto e vírgula (padrão Excel português)
+    const sep = ';';
     const cabecalho = ['Data/Hora','Máquina','Setor','Técnico','Tipo','Total Itens','Itens OK','Itens NOK','Obs. Iniciais'];
     const linhas = filtrados.map(r => {
       const nok = r.itens ? r.itens.filter(i => i.resultado === 'NOK').length : 0;
@@ -1022,10 +1023,10 @@
         r.tipoManutencao || '',
         total, ok, nok,
         r.obsInicial || ''
-      ].map(v => '"' + String(v).replace(/"/g, '""') + '"').join(',');
+      ].map(v => '"' + String(v).replace(/"/g, '""') + '"').join(sep);
     });
 
-    const csv = '\uFEFF' + [cabecalho.join(','), ...linhas].join('\n');
+    const csv = '\uFEFF' + [cabecalho.join(sep), ...linhas].join('\n');
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
