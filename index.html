@@ -7,28 +7,28 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     :root {
-      --amarelo: #F5A623;
-      --amarelo-escuro: #C47F0A;
-      --cinza-escuro: #1A1A1A;
-      --cinza-medio: #2C2C2C;
-      --cinza-painel: #3A3A3A;
-      --cinza-borda: #555;
-      --branco: #F0F0F0;
-      --verde: #4CAF50;
-      --vermelho: #E53935;
-      --azul: #1976D2;
+      --cor-destaque: #F5A623;        /* amarelo — botões principais, bordas ativas, títulos do painel */
+      --cor-destaque-hover: #C47F0A;  /* amarelo escuro — botão principal ao passar o mouse */
+      --cor-fundo-tela: #1A1A1A;      /* cinza muito escuro — fundo geral da página */
+      --cor-fundo-card: #2C2C2C;      /* cinza escuro — fundo dos cards e painéis */
+      --cor-fundo-interno: #3A3A3A;   /* cinza médio — fundo de campos e elementos internos */
+      --cor-borda: #555;              /* cinza claro — bordas dos cards e inputs */
+      --cor-texto: #F0F0F0;           /* branco suave — texto principal */
+      --cor-ok: #4CAF50;              /* verde — itens aprovados (OK) */
+      --cor-nok: #E53935;             /* vermelho — itens reprovados (NOK) */
+      --cor-link: #1976D2;            /* azul — links e elementos secundários */
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Segoe UI', Arial, sans-serif; background-color: var(--cinza-escuro); color: var(--branco); min-height: 100vh; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background-color: var(--cor-fundo-tela); color: var(--cor-texto); min-height: 100vh; }
 
-    header { background: var(--cinza-medio); border-bottom: 3px solid var(--amarelo); padding: 16px 24px; display: flex; align-items: center; gap: 14px; }
-    header .logo-icon { width: 42px; height: 42px; background: var(--amarelo); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
-    header h1 { font-size: 1.2rem; font-weight: 700; color: var(--branco); line-height: 1.2; }
+    header { background: var(--cor-fundo-card); border-bottom: 3px solid var(--cor-destaque); padding: 16px 24px; display: flex; align-items: center; gap: 14px; }
+    header .logo-icon { width: 42px; height: 42px; background: var(--cor-destaque); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+    header h1 { font-size: 1.2rem; font-weight: 700; color: var(--cor-texto); line-height: 1.2; }
     header p { font-size: 0.75rem; color: #aaa; margin-top: 2px; }
     header .header-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
-    .badge-perfil { background: var(--cinza-painel); border: 1px solid var(--cinza-borda); border-radius: 20px; padding: 4px 12px; font-size: 0.78rem; color: #ccc; }
-    .btn-sair { background: none; border: 1px solid var(--cinza-borda); color: #aaa; border-radius: 6px; padding: 5px 10px; cursor: pointer; font-size: 0.78rem; }
-    .btn-sair:hover { color: var(--vermelho); border-color: var(--vermelho); }
+    .badge-perfil { background: var(--cor-fundo-interno); border: 1px solid var(--cor-borda); border-radius: 20px; padding: 4px 12px; font-size: 0.78rem; color: #ccc; }
+    .btn-sair { background: none; border: 1px solid var(--cor-borda); color: #aaa; border-radius: 6px; padding: 5px 10px; cursor: pointer; font-size: 0.78rem; }
+    .btn-sair:hover { color: var(--cor-nok); border-color: var(--cor-nok); }
 
     .container { max-width: 640px; margin: 0 auto; padding: 24px 16px; }
     .container-wide { max-width: 1100px; margin: 0 auto; padding: 24px 16px; }
@@ -38,51 +38,51 @@
 
     /* ===== LOGIN ===== */
     .login-wrapper { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
-    .login-box { background: var(--cinza-medio); border: 1px solid var(--cinza-borda); border-radius: 16px; padding: 36px 32px; width: 100%; max-width: 380px; }
+    .login-box { background: var(--cor-fundo-card); border: 1px solid var(--cor-borda); border-radius: 16px; padding: 36px 32px; width: 100%; max-width: 380px; }
     .login-logo { text-align: center; margin-bottom: 28px; }
     .login-logo .icone { font-size: 48px; display: block; margin-bottom: 8px; }
-    .login-logo h2 { font-size: 1.3rem; color: var(--amarelo); }
+    .login-logo h2 { font-size: 1.3rem; color: var(--cor-destaque); }
     .login-logo p { font-size: 0.82rem; color: #888; margin-top: 4px; }
     .perfil-opcoes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-    .perfil-btn { background: var(--cinza-painel); border: 2px solid var(--cinza-borda); border-radius: 10px; padding: 16px 10px; cursor: pointer; text-align: center; transition: all 0.2s; }
-    .perfil-btn:hover { border-color: var(--amarelo); }
-    .perfil-btn.selecionado { border-color: var(--amarelo); background: rgba(245,166,35,0.1); }
+    .perfil-btn { background: var(--cor-fundo-interno); border: 2px solid var(--cor-borda); border-radius: 10px; padding: 16px 10px; cursor: pointer; text-align: center; transition: all 0.2s; }
+    .perfil-btn:hover { border-color: var(--cor-destaque); }
+    .perfil-btn.selecionado { border-color: var(--cor-destaque); background: rgba(245,166,35,0.1); }
     .perfil-btn .perfil-icone { font-size: 28px; display: block; margin-bottom: 6px; }
-    .perfil-btn .perfil-label { font-size: 0.88rem; font-weight: 600; color: var(--branco); }
+    .perfil-btn .perfil-label { font-size: 0.88rem; font-weight: 600; color: var(--cor-texto); }
     .perfil-btn .perfil-desc { font-size: 0.72rem; color: #888; margin-top: 3px; }
 
     /* ===== FORMS ===== */
     .form-grupo { margin-bottom: 18px; }
     .form-grupo label { display: block; font-size: 0.82rem; color: #aaa; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; }
-    .form-grupo input, .form-grupo select { width: 100%; padding: 12px 14px; background: var(--cinza-painel); border: 1px solid var(--cinza-borda); border-radius: 8px; color: var(--branco); font-size: 0.95rem; }
-    .form-grupo input:focus, .form-grupo select:focus { outline: none; border-color: var(--amarelo); }
-    .form-grupo select option { background: var(--cinza-medio); }
-    .erro-login { color: var(--vermelho); font-size: 0.83rem; text-align: center; margin-bottom: 12px; display: none; }
+    .form-grupo input, .form-grupo select { width: 100%; padding: 12px 14px; background: var(--cor-fundo-interno); border: 1px solid var(--cor-borda); border-radius: 8px; color: var(--cor-texto); font-size: 0.95rem; }
+    .form-grupo input:focus, .form-grupo select:focus { outline: none; border-color: var(--cor-destaque); }
+    .form-grupo select option { background: var(--cor-fundo-card); }
+    .erro-login { color: var(--cor-nok); font-size: 0.83rem; text-align: center; margin-bottom: 12px; display: none; }
     .erro-login.visivel { display: block; }
 
     /* ===== INSTRUÇÃO ===== */
-    .instrucao { background: var(--cinza-medio); border-left: 4px solid var(--amarelo); border-radius: 6px; padding: 14px 16px; margin-bottom: 20px; font-size: 0.9rem; color: #ccc; line-height: 1.5; }
+    .instrucao { background: var(--cor-fundo-card); border-left: 4px solid var(--cor-destaque); border-radius: 6px; padding: 14px 16px; margin-bottom: 20px; font-size: 0.9rem; color: #ccc; line-height: 1.5; }
 
     /* ===== BUSCA ===== */
     .busca-wrapper { position: relative; margin-bottom: 12px; }
-    .busca-wrapper input { width: 100%; padding: 12px 16px 12px 42px; background: var(--cinza-medio); border: 1px solid var(--cinza-borda); border-radius: 8px; color: var(--branco); font-size: 0.95rem; }
-    .busca-wrapper input:focus { outline: none; border-color: var(--amarelo); }
+    .busca-wrapper input { width: 100%; padding: 12px 16px 12px 42px; background: var(--cor-fundo-card); border: 1px solid var(--cor-borda); border-radius: 8px; color: var(--cor-texto); font-size: 0.95rem; }
+    .busca-wrapper input:focus { outline: none; border-color: var(--cor-destaque); }
     .busca-wrapper .icone-busca { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #888; font-size: 16px; }
 
     /* ===== LISTA MÁQUINAS ===== */
     .lista-maquinas { display: flex; flex-direction: column; gap: 8px; max-height: 60vh; overflow-y: auto; padding-right: 4px; }
     .lista-maquinas::-webkit-scrollbar { width: 4px; }
-    .lista-maquinas::-webkit-scrollbar-track { background: var(--cinza-medio); }
-    .lista-maquinas::-webkit-scrollbar-thumb { background: var(--cinza-borda); border-radius: 4px; }
-    .card-maquina { background: var(--cinza-medio); border: 1px solid var(--cinza-borda); border-radius: 10px; padding: 14px 16px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 14px; }
-    .card-maquina:hover { border-color: var(--amarelo); background: var(--cinza-painel); }
+    .lista-maquinas::-webkit-scrollbar-track { background: var(--cor-fundo-card); }
+    .lista-maquinas::-webkit-scrollbar-thumb { background: var(--cor-borda); border-radius: 4px; }
+    .card-maquina { background: var(--cor-fundo-card); border: 1px solid var(--cor-borda); border-radius: 10px; padding: 14px 16px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 14px; }
+    .card-maquina:hover { border-color: var(--cor-destaque); background: var(--cor-fundo-interno); }
     .card-maquina .icone-maquina { font-size: 26px; flex-shrink: 0; }
     .card-maquina .info h3 { font-size: 0.95rem; font-weight: 600; }
     .card-maquina .info p { font-size: 0.78rem; color: #999; margin-top: 2px; }
-    .card-maquina .seta { margin-left: auto; color: var(--amarelo); font-size: 20px; }
+    .card-maquina .seta { margin-left: auto; color: var(--cor-destaque); font-size: 20px; }
 
     /* ===== MAQUINA HEADER ===== */
-    .maquina-header { background: var(--cinza-medio); border: 1px solid var(--cinza-borda); border-radius: 10px; padding: 14px 16px; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
+    .maquina-header { background: var(--cor-fundo-card); border: 1px solid var(--cor-borda); border-radius: 10px; padding: 14px 16px; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
     .maquina-header .icone { font-size: 28px; }
     .maquina-header h2 { font-size: 1rem; font-weight: 700; }
     .maquina-header p { font-size: 0.78rem; color: #999; }
@@ -90,107 +90,107 @@
     /* ===== PROGRESSO ===== */
     .progresso-wrapper { margin-bottom: 20px; }
     .progresso-labels { display: flex; justify-content: space-between; font-size: 0.78rem; color: #aaa; margin-bottom: 6px; }
-    .barra-progresso { height: 6px; background: var(--cinza-painel); border-radius: 3px; overflow: hidden; }
-    .barra-progresso-fill { height: 100%; background: var(--amarelo); border-radius: 3px; transition: width 0.4s ease; }
+    .barra-progresso { height: 6px; background: var(--cor-fundo-interno); border-radius: 3px; overflow: hidden; }
+    .barra-progresso-fill { height: 100%; background: var(--cor-destaque); border-radius: 3px; transition: width 0.4s ease; }
 
     /* ===== CHECKLIST ===== */
     .secao-checklist { margin-bottom: 24px; }
-    .secao-titulo { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--amarelo); margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--cinza-painel); }
-    .item-checklist { background: var(--cinza-medio); border: 1px solid var(--cinza-borda); border-radius: 10px; padding: 14px 16px; margin-bottom: 8px; transition: border-color 0.2s; }
-    .item-checklist.ok { border-color: var(--verde); }
-    .item-checklist.nok { border-color: var(--vermelho); }
+    .secao-titulo { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--cor-destaque); margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--cor-fundo-interno); }
+    .item-checklist { background: var(--cor-fundo-card); border: 1px solid var(--cor-borda); border-radius: 10px; padding: 14px 16px; margin-bottom: 8px; transition: border-color 0.2s; }
+    .item-checklist.ok { border-color: var(--cor-ok); }
+    .item-checklist.nok { border-color: var(--cor-nok); }
     .item-topo { display: flex; align-items: flex-start; gap: 12px; }
-    .item-numero { background: var(--cinza-painel); color: #aaa; border-radius: 6px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-size: 0.78rem; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
-    .item-texto { font-size: 0.9rem; color: var(--branco); line-height: 1.4; flex: 1; }
+    .item-numero { background: var(--cor-fundo-interno); color: #aaa; border-radius: 6px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-size: 0.78rem; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+    .item-texto { font-size: 0.9rem; color: var(--cor-texto); line-height: 1.4; flex: 1; }
     .item-acoes { display: flex; gap: 8px; margin-top: 12px; padding-left: 40px; }
     .btn-ok, .btn-nok { flex: 1; padding: 10px; border: none; border-radius: 8px; font-size: 0.88rem; font-weight: 600; cursor: pointer; transition: all 0.2s; opacity: 0.4; }
-    .btn-ok { background: var(--verde); color: #fff; }
-    .btn-nok { background: var(--vermelho); color: #fff; }
+    .btn-ok { background: var(--cor-ok); color: #fff; }
+    .btn-nok { background: var(--cor-nok); color: #fff; }
     .btn-ok.selecionado, .btn-nok.selecionado { opacity: 1; }
     .item-obs { margin-top: 8px; padding-left: 40px; display: none; }
     .item-obs.visivel { display: block; }
-    .item-obs input { width: 100%; padding: 10px 12px; background: var(--cinza-painel); border: 1px solid var(--vermelho); border-radius: 8px; color: var(--branco); font-size: 0.85rem; }
+    .item-obs input { width: 100%; padding: 10px 12px; background: var(--cor-fundo-interno); border: 1px solid var(--cor-nok); border-radius: 8px; color: var(--cor-texto); font-size: 0.85rem; }
     .item-obs input:focus { outline: none; }
 
     /* ===== ASSINATURA ===== */
-    .assinatura-box { background: var(--cinza-medio); border: 1px solid var(--cinza-borda); border-radius: 10px; padding: 16px; margin-bottom: 20px; }
+    .assinatura-box { background: var(--cor-fundo-card); border: 1px solid var(--cor-borda); border-radius: 10px; padding: 16px; margin-bottom: 20px; }
     .assinatura-box h3 { font-size: 0.82rem; color: #aaa; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 10px; }
     #canvas-assinatura { width: 100%; height: 140px; background: #fff; border-radius: 6px; cursor: crosshair; display: block; touch-action: none; }
     .assinatura-acoes { display: flex; gap: 8px; margin-top: 8px; }
 
     /* ===== BOTÕES ===== */
     .btn { display: block; width: 100%; padding: 14px; border: none; border-radius: 10px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.2s; text-align: center; }
-    .btn-primario { background: var(--amarelo); color: var(--cinza-escuro); }
-    .btn-primario:hover { background: var(--amarelo-escuro); color: #fff; }
+    .btn-primario { background: var(--cor-destaque); color: var(--cor-fundo-tela); }
+    .btn-primario:hover { background: var(--cor-destaque-hover); color: #fff; }
     .btn-primario:disabled { opacity: 0.4; cursor: not-allowed; }
-    .btn-secundario { background: var(--cinza-painel); color: #aaa; border: 1px solid var(--cinza-borda); font-size: 0.88rem; }
-    .btn-secundario:hover { color: var(--branco); }
+    .btn-secundario { background: var(--cor-fundo-interno); color: #aaa; border: 1px solid var(--cor-borda); font-size: 0.88rem; }
+    .btn-secundario:hover { color: var(--cor-texto); }
     .btn-voltar { background: none; border: none; color: #aaa; font-size: 0.88rem; cursor: pointer; padding: 0 0 16px 0; display: flex; align-items: center; gap: 6px; }
-    .btn-voltar:hover { color: var(--amarelo); }
+    .btn-voltar:hover { color: var(--cor-destaque); }
 
     /* ===== SUCESSO ===== */
     .tela-sucesso { text-align: center; padding: 40px 20px; }
     .icone-sucesso { font-size: 64px; margin-bottom: 16px; }
-    .tela-sucesso h2 { font-size: 1.4rem; color: var(--verde); margin-bottom: 8px; }
+    .tela-sucesso h2 { font-size: 1.4rem; color: var(--cor-ok); margin-bottom: 8px; }
     .tela-sucesso p { color: #aaa; font-size: 0.9rem; margin-bottom: 28px; line-height: 1.5; }
-    .resumo-info { background: var(--cinza-medio); border-radius: 10px; padding: 16px; margin-bottom: 24px; text-align: left; }
-    .resumo-linha { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--cinza-painel); font-size: 0.88rem; }
+    .resumo-info { background: var(--cor-fundo-card); border-radius: 10px; padding: 16px; margin-bottom: 24px; text-align: left; }
+    .resumo-linha { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--cor-fundo-interno); font-size: 0.88rem; }
     .resumo-linha:last-child { border-bottom: none; }
     .resumo-linha span:first-child { color: #aaa; }
-    .resumo-linha span:last-child { color: var(--branco); font-weight: 600; }
+    .resumo-linha span:last-child { color: var(--cor-texto); font-weight: 600; }
 
     /* ===== PAINEL GESTOR ===== */
     .painel-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 24px; }
-    .stat-card { background: var(--cinza-medio); border: 1px solid var(--cinza-borda); border-radius: 10px; padding: 16px; text-align: center; }
-    .stat-numero { font-size: 2rem; font-weight: 700; color: var(--amarelo); }
+    .stat-card { background: var(--cor-fundo-card); border: 1px solid var(--cor-borda); border-radius: 10px; padding: 16px; text-align: center; }
+    .stat-numero { font-size: 2rem; font-weight: 700; color: var(--cor-destaque); }
     .stat-label { font-size: 0.78rem; color: #888; margin-top: 4px; }
 
     .filtros-painel { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-    .filtros-painel input, .filtros-painel select { flex: 1; min-width: 140px; padding: 10px 12px; background: var(--cinza-medio); border: 1px solid var(--cinza-borda); border-radius: 8px; color: var(--branco); font-size: 0.88rem; }
-    .filtros-painel input:focus, .filtros-painel select:focus { outline: none; border-color: var(--amarelo); }
+    .filtros-painel input, .filtros-painel select { flex: 1; min-width: 140px; padding: 10px 12px; background: var(--cor-fundo-card); border: 1px solid var(--cor-borda); border-radius: 8px; color: var(--cor-texto); font-size: 0.88rem; }
+    .filtros-painel input:focus, .filtros-painel select:focus { outline: none; border-color: var(--cor-destaque); }
 
     .tabela-wrapper { overflow-x: auto; }
     .tabela-manutencoes { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-    .tabela-manutencoes thead tr { background: var(--cinza-painel); }
-    .tabela-manutencoes th { padding: 10px 14px; text-align: left; color: var(--amarelo); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; }
-    .tabela-manutencoes td { padding: 12px 14px; border-bottom: 1px solid var(--cinza-painel); color: var(--branco); vertical-align: middle; }
-    .tabela-manutencoes tbody tr:hover { background: var(--cinza-medio); }
-    .badge-ok { background: rgba(76,175,80,0.15); color: var(--verde); border-radius: 4px; padding: 2px 8px; font-size: 0.75rem; font-weight: 600; }
-    .badge-nok { background: rgba(229,57,53,0.15); color: var(--vermelho); border-radius: 4px; padding: 2px 8px; font-size: 0.75rem; font-weight: 600; }
-    .badge-tipo { background: var(--cinza-painel); color: #ccc; border-radius: 4px; padding: 2px 8px; font-size: 0.75rem; }
-    .btn-mini { background: var(--cinza-painel); border: 1px solid var(--cinza-borda); color: #ccc; border-radius: 6px; padding: 5px 10px; font-size: 0.78rem; cursor: pointer; white-space: nowrap; }
-    .btn-mini:hover { border-color: var(--amarelo); color: var(--amarelo); }
+    .tabela-manutencoes thead tr { background: var(--cor-fundo-interno); }
+    .tabela-manutencoes th { padding: 10px 14px; text-align: left; color: var(--cor-destaque); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; }
+    .tabela-manutencoes td { padding: 12px 14px; border-bottom: 1px solid var(--cor-fundo-interno); color: var(--cor-texto); vertical-align: middle; }
+    .tabela-manutencoes tbody tr:hover { background: var(--cor-fundo-card); }
+    .badge-ok { background: rgba(76,175,80,0.15); color: var(--cor-ok); border-radius: 4px; padding: 2px 8px; font-size: 0.75rem; font-weight: 600; }
+    .badge-nok { background: rgba(229,57,53,0.15); color: var(--cor-nok); border-radius: 4px; padding: 2px 8px; font-size: 0.75rem; font-weight: 600; }
+    .badge-tipo { background: var(--cor-fundo-interno); color: #ccc; border-radius: 4px; padding: 2px 8px; font-size: 0.75rem; }
+    .btn-mini { background: var(--cor-fundo-interno); border: 1px solid var(--cor-borda); color: #ccc; border-radius: 6px; padding: 5px 10px; font-size: 0.78rem; cursor: pointer; white-space: nowrap; }
+    .btn-mini:hover { border-color: var(--cor-destaque); color: var(--cor-destaque); }
     .sem-registros { text-align: center; padding: 40px; color: #666; }
 
     /* ===== MODAL DETALHE ===== */
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 100; display: none; align-items: center; justify-content: center; padding: 16px; }
     .modal-overlay.ativo { display: flex; }
-    .modal-box { background: var(--cinza-medio); border: 1px solid var(--cinza-borda); border-radius: 14px; width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto; }
-    .modal-header { padding: 18px 20px; border-bottom: 1px solid var(--cinza-painel); display: flex; align-items: center; justify-content: space-between; }
-    .modal-header h3 { font-size: 1rem; color: var(--amarelo); }
+    .modal-box { background: var(--cor-fundo-card); border: 1px solid var(--cor-borda); border-radius: 14px; width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto; }
+    .modal-header { padding: 18px 20px; border-bottom: 1px solid var(--cor-fundo-interno); display: flex; align-items: center; justify-content: space-between; }
+    .modal-header h3 { font-size: 1rem; color: var(--cor-destaque); }
     .modal-fechar { background: none; border: none; color: #aaa; font-size: 20px; cursor: pointer; }
-    .modal-fechar:hover { color: var(--branco); }
+    .modal-fechar:hover { color: var(--cor-texto); }
     .modal-body { padding: 20px; }
     .modal-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
     .modal-info-item label { font-size: 0.72rem; color: #888; text-transform: uppercase; }
     .modal-info-item span { display: block; font-size: 0.9rem; font-weight: 600; margin-top: 2px; }
-    .modal-checklist-item { display: flex; justify-content: space-between; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid var(--cinza-painel); font-size: 0.85rem; gap: 12px; }
+    .modal-checklist-item { display: flex; justify-content: space-between; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid var(--cor-fundo-interno); font-size: 0.85rem; gap: 12px; }
     .modal-checklist-item:last-child { border-bottom: none; }
     .modal-checklist-texto { flex: 1; color: #ccc; }
     .modal-checklist-obs { font-size: 0.75rem; color: #888; font-style: italic; margin-top: 3px; }
     .modal-assinatura { margin-top: 16px; }
     .modal-assinatura label { font-size: 0.72rem; color: #888; text-transform: uppercase; display: block; margin-bottom: 8px; }
     .modal-assinatura img { background: #fff; border-radius: 6px; max-width: 200px; }
-    .modal-footer { padding: 16px 20px; border-top: 1px solid var(--cinza-painel); display: flex; gap: 10px; }
+    .modal-footer { padding: 16px 20px; border-top: 1px solid var(--cor-fundo-interno); display: flex; gap: 10px; }
 
     /* ===== TOAST ===== */
-    .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px); background: var(--cinza-painel); border: 1px solid var(--cinza-borda); color: var(--branco); padding: 12px 20px; border-radius: 8px; font-size: 0.88rem; transition: transform 0.3s ease; z-index: 999; white-space: nowrap; }
+    .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px); background: var(--cor-fundo-interno); border: 1px solid var(--cor-borda); color: var(--cor-texto); padding: 12px 20px; border-radius: 8px; font-size: 0.88rem; transition: transform 0.3s ease; z-index: 999; white-space: nowrap; }
     .toast.visivel { transform: translateX(-50%) translateY(0); }
 
     /* ===== LOADING ===== */
     .loading { display: none; text-align: center; padding: 40px; color: #aaa; }
     .loading.ativo { display: block; }
-    .spinner { width: 36px; height: 36px; border: 3px solid var(--cinza-painel); border-top-color: var(--amarelo); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px; }
+    .spinner { width: 36px; height: 36px; border: 3px solid var(--cor-fundo-interno); border-top-color: var(--cor-destaque); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
     @media (max-width: 480px) {
@@ -332,12 +332,12 @@
 <!-- ===== TELA PAINEL GESTOR ===== -->
 <div id="tela-painel" class="tela">
   <div class="container-wide">
-    <h2 style="font-size:1.2rem;margin-bottom:20px;color:var(--amarelo)">📊 Painel do Gestor</h2>
+    <h2 style="font-size:1.2rem;margin-bottom:20px;color:var(--cor-destaque)">📊 Painel do Gestor</h2>
 
     <div class="painel-stats" id="painel-stats">
       <div class="stat-card"><div class="stat-numero" id="stat-total">—</div><div class="stat-label">Total de Manutenções</div></div>
       <div class="stat-card"><div class="stat-numero" id="stat-mes">—</div><div class="stat-label">Este Mês</div></div>
-      <div class="stat-card"><div class="stat-numero" id="stat-nok" style="color:var(--vermelho)">—</div><div class="stat-label">Com Itens NOK</div></div>
+      <div class="stat-card"><div class="stat-numero" id="stat-nok" style="color:var(--cor-nok)">—</div><div class="stat-label">Com Itens NOK</div></div>
       <div class="stat-card"><div class="stat-numero" id="stat-maquinas">—</div><div class="stat-label">Máquinas Atendidas</div></div>
     </div>
 
@@ -674,8 +674,8 @@
       <div class="resumo-linha"><span>Técnico</span><span>${dadosSalvos.tecnicoNome}</span></div>
       <div class="resumo-linha"><span>Tipo</span><span>${dadosSalvos.tipoManutencao}</span></div>
       <div class="resumo-linha"><span>Data/Hora</span><span>${dadosSalvos.dataHoraLocal}</span></div>
-      <div class="resumo-linha"><span>Itens OK</span><span style="color:var(--verde)">${dadosSalvos.itens.length - nok} ✔</span></div>
-      <div class="resumo-linha"><span>Itens NOK</span><span style="color:${nok > 0 ? 'var(--vermelho)' : 'var(--verde)'}">${nok} ${nok > 0 ? '✘' : '✔'}</span></div>
+      <div class="resumo-linha"><span>Itens OK</span><span style="color:var(--cor-ok)">${dadosSalvos.itens.length - nok} ✔</span></div>
+      <div class="resumo-linha"><span>Itens NOK</span><span style="color:${nok > 0 ? 'var(--cor-nok)' : 'var(--cor-ok)'}">${nok} ${nok > 0 ? '✘' : '✔'}</span></div>
     `;
     irPara('tela-sucesso');
   }
@@ -887,10 +887,10 @@
         <div class="modal-info-item"><label>Técnico</label><span>${r.tecnicoNome}</span></div>
         <div class="modal-info-item"><label>Tipo</label><span>${r.tipoManutencao}</span></div>
         <div class="modal-info-item"><label>Data/Hora</label><span>${r.dataHoraLocal}</span></div>
-        <div class="modal-info-item"><label>Resultado Geral</label><span>${nok > 0 ? `<span style="color:var(--vermelho)">✘ ${nok} NOK</span>` : '<span style="color:var(--verde)">✔ Tudo OK</span>'}</span></div>
+        <div class="modal-info-item"><label>Resultado Geral</label><span>${nok > 0 ? `<span style="color:var(--cor-nok)">✘ ${nok} NOK</span>` : '<span style="color:var(--cor-ok)">✔ Tudo OK</span>'}</span></div>
         ${r.obsInicial ? `<div class="modal-info-item" style="grid-column:1/-1"><label>Obs. iniciais</label><span>${r.obsInicial}</span></div>` : ''}
       </div>
-      <div style="font-size:0.78rem;color:var(--amarelo);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--cinza-painel)">Itens do Checklist</div>
+      <div style="font-size:0.78rem;color:var(--cor-destaque);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--cor-fundo-interno)">Itens do Checklist</div>
       ${(r.itens || []).map((item, i) => `
         <div class="modal-checklist-item">
           <div>
