@@ -713,10 +713,10 @@
     const doc = new jsPDF({ unit: 'mm', format: 'a4' });
     const d = dados;
     const nok = d.itens.filter(i => i.resultado === 'NOK').length;
-    doc.setFillColor(42, 42, 42); doc.rect(0, 0, 210, 30, 'F');
-    doc.setTextColor(245, 166, 35); doc.setFontSize(16); doc.setFont('helvetica', 'bold');
+    doc.setFillColor(17, 29, 92); doc.rect(0, 0, 210, 30, 'F');
+    doc.setTextColor(255, 255, 255); doc.setFontSize(16); doc.setFont('helvetica', 'bold');
     doc.text('FLUORTECH - Relatório de Manutenção', 14, 14);
-    doc.setTextColor(180, 180, 180); doc.setFontSize(9);
+    doc.setTextColor(197, 203, 223); doc.setFontSize(9);
     doc.text(`Gerado em ${new Date().toLocaleString('pt-BR')}`, 14, 23);
     let y = 40;
     doc.setTextColor(30, 30, 30); doc.setFontSize(10);
@@ -727,21 +727,21 @@
       doc.setFont('helvetica', 'normal'); doc.text(String(v), 55, y); y += 7;
     });
     y += 4;
-    doc.setFillColor(245, 166, 35); doc.rect(14, y, 182, 6, 'F');
+    doc.setFillColor(17, 29, 92); doc.rect(14, y, 182, 6, 'F');
     doc.setTextColor(255, 255, 255); doc.setFont('helvetica', 'bold'); doc.setFontSize(9);
     doc.text('ITEM', 16, y + 4); doc.text('RESULTADO', 160, y + 4); y += 10;
     d.itens.forEach((item, i) => {
       if (y > 260) { doc.addPage(); y = 20; }
       const cor = item.resultado === 'OK' ? [76, 175, 80] : [229, 57, 53];
-      if (i % 2 === 0) { doc.setFillColor(245, 245, 245); doc.rect(14, y - 4, 182, 8, 'F'); }
+      if (i % 2 === 0) { doc.setFillColor(244, 246, 251); doc.rect(14, y - 4, 182, 8, 'F'); }
       doc.setTextColor(30, 30, 30); doc.setFont('helvetica', 'normal'); doc.setFontSize(8);
       doc.text(doc.splitTextToSize(`${i + 1}. ${item.texto}`, 140), 16, y);
       doc.setTextColor(...cor); doc.setFont('helvetica', 'bold'); doc.text(item.resultado, 163, y);
-      if (item.observacao) { y += 5; doc.setTextColor(150, 50, 50); doc.setFont('helvetica', 'italic'); doc.setFontSize(7); doc.text(`   ↳ ${item.observacao}`, 16, y); }
+      if (item.observacao) { y += 5; doc.setTextColor(198, 40, 40); doc.setFont('helvetica', 'italic'); doc.setFontSize(7); doc.text(`   ↳ ${item.observacao}`, 16, y); }
       y += 8;
     });
     y += 4;
-    doc.setFillColor(42, 42, 42); doc.rect(14, y, 182, 10, 'F');
+    doc.setFillColor(17, 29, 92); doc.rect(14, y, 182, 10, 'F');
     doc.setTextColor(255, 255, 255); doc.setFont('helvetica', 'bold'); doc.setFontSize(9);
     doc.text(`Total: ${d.itens.length} itens   ✔ OK: ${d.itens.length - nok}   ✘ NOK: ${nok}`, 16, y + 7); y += 18;
     if (d.assinatura) {
@@ -749,7 +749,7 @@
       doc.text('Assinatura do Técnico:', 14, y); y += 4;
       doc.addImage(d.assinatura, 'PNG', 14, y, 80, 25); y += 30;
     }
-    doc.setFontSize(8); doc.setTextColor(150, 150, 150); doc.setFont('helvetica', 'italic');
+    doc.setFontSize(8); doc.setTextColor(102, 112, 160); doc.setFont('helvetica', 'italic');
     doc.text(`Fluortech Manutenções · ${d.dataHoraLocal} · Técnico: ${d.tecnicoNome}`, 14, y);
     return doc;
   }
@@ -784,8 +784,8 @@
 
     const htmlEmail = `
       <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto">
-        <div style="background:#2C2C2C;padding:20px;border-bottom:3px solid #F5A623">
-          <h2 style="color:#F5A623;margin:0">⚙️ Manutenção Fluortech</h2>
+        <div style="background:#111D5C;padding:20px;border-bottom:3px solid #35438C">
+          <h2 style="color:#FFFFFF;margin:0">⚙️ Manutenção Fluortech</h2>
           <p style="color:#aaa;margin:4px 0 0">Relatório de Manutenção</p>
         </div>
         <div style="padding:20px;background:#fff">
@@ -800,10 +800,10 @@
           <div style="background:#f0f8f0;border-left:4px solid #4CAF50;padding:10px 14px;margin-bottom:8px">✔ <strong>${d.itens.length - nok} itens OK</strong></div>
           ${nok > 0 ? `<div style="background:#fff0f0;border-left:4px solid #E53935;padding:10px 14px;margin-bottom:20px">✘ <strong>${nok} itens NOK</strong></div>` : '<div style="margin-bottom:20px"></div>'}
           <table style="width:100%;border-collapse:collapse;border:1px solid #eee">
-            <thead><tr style="background:#2C2C2C">
-              <th style="padding:8px 10px;color:#F5A623;text-align:left">Item</th>
-              <th style="padding:8px 10px;color:#F5A623;text-align:center">Resultado</th>
-              <th style="padding:8px 10px;color:#F5A623;text-align:left">Observação</th>
+            <thead><tr style="background:#111D5C">
+              <th style="padding:8px 10px;color:#FFFFFF;text-align:left">Item</th>
+              <th style="padding:8px 10px;color:#FFFFFF;text-align:center">Resultado</th>
+              <th style="padding:8px 10px;color:#FFFFFF;text-align:left">Observação</th>
             </tr></thead>
             <tbody>${itensHtml}</tbody>
           </table>
