@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Manutenção Fluortech</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    :root {
+      --amarelo: #F5A623;
+      --amarelo-escuro: #C47F0A;
+      --cinza-escuro: #1A1A1A;
+      --cinza-medio: #2C2C2C;
+      --cinza-painel: #3A3A3A;
+      --cinza-borda: #555;
+      --branco: #F0F0F0;
+      --verde: #4CAF50;
+      --vermelho: #E53935;
+      --azul: #1976D2;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background-color: var(--cinza-escuro);
+      color: var(--branco);
+      min-height: 100vh;
+    }
+
+    header {
+      background: var(--cinza-medio);
+      border-bottom: 3px solid var(--amarelo);
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    header .logo-icon {
+      width: 42px; height: 42px;
+      background: var(--amarelo);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+    }
+
+    header h1 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--branco);
+      line-height: 1.2;
+    }
+
+    header p {
+      font-size: 0.75rem;
+      color: #aaa;
+      margin-top: 2px;
+    }
+
+    .container {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 24px 16px;
+    }
+
+    /* ===== TELAS ===== */
+    .tela { display: none; }
+    .tela.ativa { display: block; }
+
+    /* ===== TELA 1 — SELEÇÃO DE MÁQUINA ===== */
+    .instrucao {
+      background: var(--cinza-medio);
+      border-left: 4px solid var(--amarelo);
+      border-radius: 6px;
+      padding: 14px 16px;
+      margin-bottom: 20px;
+      font-size: 0.9rem;
+      color: #ccc;
+      line-height: 1.5;
+    }
+
+    .busca-wrapper {
+      position: relative;
+      margin-bottom: 12px;
+    }
+
+    .busca-wrapper input {
+      width: 100%;
+      padding: 12px 16px 12px 42px;
+      background: var(--cinza-medio);
+      border: 1px solid var(--cinza-borda);
+      border-radius: 8px;
+      color: var(--branco);
+      font-size: 0.95rem;
+    }
+
+    .busca-wrapper input:focus {
+      outline: none;
+      border-color: var(--amarelo);
+    }
+
+    .busca-wrapper .icone-busca {
+      position: absolute;
+      left: 14px; top: 50%;
+      transform: translateY(-50%);
+      color: #888;
+      font-size: 16px;
+    }
+
+    .lista-maquinas {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 60vh;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .lista-maquinas::-webkit-scrollbar { width: 4px; }
+    .lista-maquinas::-webkit-scrollbar-track { background: var(--cinza-medio); }
+    .lista-maquinas::-webkit-scrollbar-thumb { background: var(--cinza-borda); border-radius: 4px; }
+
+    .card-maquina {
+      background: var(--cinza-medio);
+      border: 1px solid var(--cinza-borda);
+      border-radius: 10px;
+      padding: 14px 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .card-maquina:hover, .card-maquina:active {
+      border-color: var(--amarelo);
+      background: var(--cinza-painel);
+    }
+
+    .card-maquina .icone-maquina {
+      font-size: 26px;
+      flex-shrink: 0;
+    }
+
+    .card-maquina .info h3 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--branco);
+    }
+
+    .card-maquina .info p {
+      font-size: 0.78rem;
+      color: #999;
+      margin-top: 2px;
+    }
+
+    .card-maquina .seta {
+      margin-left: auto;
+      color: var(--amarelo);
+      font-size: 20px;
+    }
+
+    /* ===== TELA 2 — DADOS DO TÉCNICO ===== */
+    .form-grupo {
+      margin-bottom: 18px;
+    }
+
+    .form-grupo label {
+      display: block;
+      font-size: 0.82rem;
+      color: #aaa;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .form-grupo input, .form-grupo select {
+      width: 100%;
+      padding: 12px 14px;
+      background: var(--cinza-medio);
+      border: 1px solid var(--cinza-borda);
+      border-radius: 8px;
+      color: var(--branco);
+      font-size: 0.95rem;
+    }
+
+    .form-grupo input:focus, .form-grupo select:focus {
+      outline: none;
+      border-color: var(--amarelo);
+    }
+
+    .form-grupo select option { background: var(--cinza-medio); }
+
+    /* ===== TELA 3 — CHECKLIST ===== */
+    .maquina-header {
+      background: var(--cinza-medio);
+      border: 1px solid var(--cinza-borda);
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .maquina-header .icone { font-size: 28px; }
+
+    .maquina-header h2 {
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .maquina-header p {
+      font-size: 0.78rem;
+      color: #999;
+    }
+
+    .progresso-wrapper {
+      margin-bottom: 20px;
+    }
+
+    .progresso-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.78rem;
+      color: #aaa;
+      margin-bottom: 6px;
+    }
+
+    .barra-progresso {
+      height: 6px;
+      background: var(--cinza-painel);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .barra-progresso-fill {
+      height: 100%;
+      background: var(--amarelo);
+      border-radius: 3px;
+      transition: width 0.4s ease;
+    }
+
+    .secao-checklist {
+      margin-bottom: 24px;
+    }
+
+    .secao-titulo {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--amarelo);
+      margin-bottom: 10px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--cinza-painel);
+    }
+
+    .item-checklist {
+      background: var(--cinza-medio);
+      border: 1px solid var(--cinza-borda);
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-bottom: 8px;
+      transition: border-color 0.2s;
+    }
+
+    .item-checklist.ok { border-color: var(--verde); }
+    .item-checklist.nok { border-color: var(--vermelho); }
+
+    .item-topo {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .item-numero {
+      background: var(--cinza-painel);
+      color: #aaa;
+      border-radius: 6px;
+      width: 28px; height: 28px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.78rem;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .item-texto {
+      font-size: 0.9rem;
+      color: var(--branco);
+      line-height: 1.4;
+      flex: 1;
+    }
+
+    .item-acoes {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+      padding-left: 40px;
+    }
+
+    .btn-ok, .btn-nok {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      opacity: 0.4;
+    }
+
+    .btn-ok { background: var(--verde); color: #fff; }
+    .btn-nok { background: var(--vermelho); color: #fff; }
+    .btn-ok.selecionado, .btn-nok.selecionado { opacity: 1; }
+
+    .item-obs {
+      margin-top: 8px;
+      padding-left: 40px;
+      display: none;
+    }
+
+    .item-obs.visivel { display: block; }
+
+    .item-obs input {
+      width: 100%;
+      padding: 10px 12px;
+      background: var(--cinza-painel);
+      border: 1px solid var(--vermelho);
+      border-radius: 8px;
+      color: var(--branco);
+      font-size: 0.85rem;
+    }
+
+    .item-obs input:focus { outline: none; border-color: #ff6b6b; }
+
+    /* ===== ASSINATURA ===== */
+    .assinatura-box {
+      background: var(--cinza-medio);
+      border: 1px solid var(--cinza-borda);
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+
+    .assinatura-box h3 {
+      font-size: 0.82rem;
+      color: #aaa;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 10px;
+    }
+
+    #canvas-assinatura {
+      width: 100%;
+      height: 140px;
+      background: #fff;
+      border-radius: 6px;
+      cursor: crosshair;
+      display: block;
+      touch-action: none;
+    }
+
+    .assinatura-acoes {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    /* ===== BOTÕES GERAIS ===== */
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+
+    .btn-primario {
+      background: var(--amarelo);
+      color: var(--cinza-escuro);
+    }
+
+    .btn-primario:hover { background: var(--amarelo-escuro); color: #fff; }
+    .btn-primario:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .btn-secundario {
+      background: var(--cinza-painel);
+      color: #aaa;
+      border: 1px solid var(--cinza-borda);
+      font-size: 0.88rem;
+    }
+
+    .btn-secundario:hover { color: var(--branco); }
+
+    .btn-voltar {
+      background: none;
+      border: none;
+      color: #aaa;
+      font-size: 0.88rem;
+      cursor: pointer;
+      padding: 0 0 16px 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-voltar:hover { color: var(--amarelo); }
+
+    /* ===== TELA 4 — SUCESSO ===== */
+    .tela-sucesso {
+      text-align: center;
+      padding: 40px 20px;
+    }
+
+    .icone-sucesso {
+      font-size: 64px;
+      margin-bottom: 16px;
+    }
+
+    .tela-sucesso h2 {
+      font-size: 1.4rem;
+      color: var(--verde);
+      margin-bottom: 8px;
+    }
+
+    .tela-sucesso p {
+      color: #aaa;
+      font-size: 0.9rem;
+      margin-bottom: 28px;
+      line-height: 1.5;
+    }
+
+    .resumo-info {
+      background: var(--cinza-medio);
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 24px;
+      text-align: left;
+    }
+
+    .resumo-linha {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+      border-bottom: 1px solid var(--cinza-painel);
+      font-size: 0.88rem;
+    }
+
+    .resumo-linha:last-child { border-bottom: none; }
+    .resumo-linha span:first-child { color: #aaa; }
+    .resumo-linha span:last-child { color: var(--branco); font-weight: 600; }
+
+    /* ===== TOAST ===== */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--cinza-painel);
+      border: 1px solid var(--cinza-borda);
+      color: var(--branco);
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      transition: transform 0.3s ease;
+      z-index: 999;
+      white-space: nowrap;
+    }
+
+    .toast.visivel { transform: translateX(-50%) translateY(0); }
+
+    /* ===== LOADING ===== */
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 40px;
+      color: #aaa;
+    }
+
+    .loading.ativo { display: block; }
+
+    .spinner {
+      width: 36px; height: 36px;
+      border: 3px solid var(--cinza-painel);
+      border-top-color: var(--amarelo);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 12px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ===== MOBILE ===== */
+    @media (max-width: 480px) {
+      header h1 { font-size: 1rem; }
+      .container { padding: 16px 12px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo-icon">⚙️</div>
+  <div>
+    <h1>Manutenção Fluortech</h1>
+    <p>Sistema de Registro de Manutenções</p>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- ===== TELA 1: SELECIONAR MÁQUINA ===== -->
+  <div id="tela-maquinas" class="tela ativa">
+    <div class="instrucao">
+      📋 Selecione a máquina que será manutenida hoje.
+    </div>
+    <div class="busca-wrapper">
+      <span class="icone-busca">🔍</span>
+      <input type="text" id="busca-maquina" placeholder="Buscar máquina..." oninput="filtrarMaquinas()" />
+    </div>
+    <div class="lista-maquinas" id="lista-maquinas">
+      <div class="loading ativo"><div class="spinner"></div>Carregando máquinas...</div>
+    </div>
+  </div>
+
+  <!-- ===== TELA 2: DADOS DO TÉCNICO ===== -->
+  <div id="tela-tecnico" class="tela">
+    <button class="btn-voltar" onclick="irPara('tela-maquinas')">← Voltar</button>
+    <div class="maquina-header" id="header-maquina-tecnico"></div>
+
+    <div class="form-grupo">
+      <label>Seu nome</label>
+      <input type="text" id="tecnico-nome" placeholder="Ex: João Silva" />
+    </div>
+    <div class="form-grupo">
+      <label>Tipo de manutenção</label>
+      <select id="tipo-manutencao">
+        <option value="">Selecione...</option>
+        <option value="Preventiva">Preventiva</option>
+        <option value="Corretiva">Corretiva</option>
+        <option value="Preditiva">Preditiva</option>
+        <option value="Inspeção">Inspeção</option>
+      </select>
+    </div>
+    <div class="form-grupo">
+      <label>Observações iniciais (opcional)</label>
+      <input type="text" id="obs-inicial" placeholder="Ex: Máquina apresentando ruído incomum" />
+    </div>
+
+    <button class="btn btn-primario" onclick="iniciarChecklist()">Iniciar Checklist →</button>
+  </div>
+
+  <!-- ===== TELA 3: CHECKLIST ===== -->
+  <div id="tela-checklist" class="tela">
+    <button class="btn-voltar" onclick="irPara('tela-tecnico')">← Voltar</button>
+    <div class="maquina-header" id="header-maquina-checklist"></div>
+
+    <div class="progresso-wrapper">
+      <div class="progresso-labels">
+        <span>Progresso</span>
+        <span id="progresso-texto">0 / 0 itens</span>
+      </div>
+      <div class="barra-progresso">
+        <div class="barra-progresso-fill" id="barra-fill" style="width:0%"></div>
+      </div>
+    </div>
+
+    <div id="conteudo-checklist"></div>
+
+    <div class="assinatura-box">
+      <h3>✍️ Assinatura do Técnico</h3>
+      <canvas id="canvas-assinatura"></canvas>
+      <div class="assinatura-acoes">
+        <button class="btn btn-secundario" onclick="limparAssinatura()" style="width:auto;padding:8px 16px;">Limpar</button>
+      </div>
+    </div>
+
+    <button class="btn btn-primario" id="btn-finalizar" onclick="finalizar()">✅ Finalizar e Salvar</button>
+  </div>
+
+  <!-- ===== TELA 4: SUCESSO ===== -->
+  <div id="tela-sucesso" class="tela">
+    <div class="tela-sucesso">
+      <div class="icone-sucesso">✅</div>
+      <h2>Manutenção Registrada!</h2>
+      <p>O checklist foi salvo com sucesso no sistema.</p>
+
+      <div class="resumo-info" id="resumo-dados"></div>
+
+      <button class="btn btn-primario" onclick="baixarPDF()" style="margin-bottom:12px">📄 Baixar PDF</button>
+      <button class="btn btn-secundario" onclick="novaManutencao()">Registrar outra manutenção</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- Toast de notificação -->
+<div class="toast" id="toast"></div>
+
+<!-- ===== FIREBASE ===== -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, collection, getDocs, addDoc, serverTimestamp }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  // ⚠️ SUBSTITUA ABAIXO PELOS SEUS DADOS DO FIREBASE
+  const firebaseConfig = {
+    apiKey: "AIzaSyDZadgIZLA4aOz33SQJDcxUgTrMKXwrf3Q",
+    authDomain: "manutencoes-fluortech.firebaseapp.com",
+    projectId: "manutencoes-fluortech",
+    storageBucket: "manutencoes-fluortech.firebasestorage.app",
+    messagingSenderId: "524530859774",
+    appId: "1:524530859774:web:3d784e49984d45a85a2faf"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // Expor para o escopo global
+  window._db = db;
+  window._collection = collection;
+  window._getDocs = getDocs;
+  window._addDoc = addDoc;
+  window._serverTimestamp = serverTimestamp;
+
+  // Carregar máquinas ao iniciar
+  carregarMaquinas();
+</script>
+
+<script>
+  // ===== ESTADO GLOBAL =====
+  let maquinaSelecionada = null;
+  let respostas = {};
+  let assinaturaCanvas, assinaturaCtx, desenhando = false;
+  let dadosSalvos = null;
+  let todasMaquinas = [];
+
+  // ===== NAVEGAÇÃO =====
+  function irPara(telaId) {
+    document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa'));
+    document.getElementById(telaId).classList.add('ativa');
+    window.scrollTo(0, 0);
+  }
+
+  // ===== MÁQUINAS =====
+  async function carregarMaquinas() {
+    try {
+      const snap = await window._getDocs(window._collection(window._db, 'maquinas'));
+      todasMaquinas = [];
+      snap.forEach(doc => todasMaquinas.push({ id: doc.id, ...doc.data() }));
+      todasMaquinas.sort((a, b) => a.nome.localeCompare(b.nome));
+      renderizarMaquinas(todasMaquinas);
+    } catch (e) {
+      document.getElementById('lista-maquinas').innerHTML =
+        '<p style="color:#e57373;padding:16px">Erro ao carregar máquinas. Verifique a conexão.</p>';
+    }
+  }
+
+  function renderizarMaquinas(lista) {
+    const el = document.getElementById('lista-maquinas');
+    if (lista.length === 0) {
+      el.innerHTML = '<p style="color:#aaa;padding:16px;text-align:center">Nenhuma máquina encontrada.</p>';
+      return;
+    }
+    el.innerHTML = lista.map(m => `
+      <div class="card-maquina" onclick="selecionarMaquina('${m.id}')">
+        <div class="icone-maquina">${m.icone || '⚙️'}</div>
+        <div class="info">
+          <h3>${m.nome}</h3>
+          <p>${m.setor || ''} · ${(m.checklist || []).length} itens</p>
+        </div>
+        <div class="seta">›</div>
+      </div>
+    `).join('');
+  }
+
+  function filtrarMaquinas() {
+    const q = document.getElementById('busca-maquina').value.toLowerCase();
+    const filtradas = todasMaquinas.filter(m =>
+      m.nome.toLowerCase().includes(q) || (m.setor || '').toLowerCase().includes(q)
+    );
+    renderizarMaquinas(filtradas);
+  }
+
+  function selecionarMaquina(id) {
+    maquinaSelecionada = todasMaquinas.find(m => m.id === id);
+    respostas = {};
+
+    const html = `
+      <div class="icone">${maquinaSelecionada.icone || '⚙️'}</div>
+      <div>
+        <h2>${maquinaSelecionada.nome}</h2>
+        <p>${maquinaSelecionada.setor || ''}</p>
+      </div>
+    `;
+    document.getElementById('header-maquina-tecnico').innerHTML = html;
+    document.getElementById('header-maquina-checklist').innerHTML = html;
+
+    irPara('tela-tecnico');
+  }
+
+  // ===== CHECKLIST =====
+  function iniciarChecklist() {
+    const nome = document.getElementById('tecnico-nome').value.trim();
+    const tipo = document.getElementById('tipo-manutencao').value;
+    if (!nome) { mostrarToast('Informe seu nome.'); return; }
+    if (!tipo) { mostrarToast('Selecione o tipo de manutenção.'); return; }
+    renderizarChecklist();
+    irPara('tela-checklist');
+    iniciarAssinatura();
+  }
+
+  function renderizarChecklist() {
+    const checklist = maquinaSelecionada.checklist || [];
+    const secoes = {};
+
+    checklist.forEach((item, i) => {
+      const sec = item.secao || 'Geral';
+      if (!secoes[sec]) secoes[sec] = [];
+      secoes[sec].push({ ...item, index: i });
+    });
+
+    let html = '';
+    for (const [secao, itens] of Object.entries(secoes)) {
+      html += `<div class="secao-checklist"><div class="secao-titulo">${secao}</div>`;
+      itens.forEach(item => {
+        html += `
+          <div class="item-checklist" id="item-${item.index}">
+            <div class="item-topo">
+              <div class="item-numero">${item.index + 1}</div>
+              <div class="item-texto">${item.texto}</div>
+            </div>
+            <div class="item-acoes">
+              <button class="btn-ok" id="ok-${item.index}" onclick="responder(${item.index}, 'OK')">✔ OK</button>
+              <button class="btn-nok" id="nok-${item.index}" onclick="responder(${item.index}, 'NOK')">✘ NOK</button>
+            </div>
+            <div class="item-obs" id="obs-wrapper-${item.index}">
+              <input type="text" id="obs-${item.index}" placeholder="Descreva o problema encontrado..." />
+            </div>
+          </div>
+        `;
+      });
+      html += '</div>';
+    }
+
+    document.getElementById('conteudo-checklist').innerHTML = html;
+    atualizarProgresso();
+  }
+
+  function responder(index, valor) {
+    respostas[index] = valor;
+
+    const itemEl = document.getElementById(`item-${index}`);
+    const okBtn = document.getElementById(`ok-${index}`);
+    const nokBtn = document.getElementById(`nok-${index}`);
+    const obsWrapper = document.getElementById(`obs-wrapper-${index}`);
+
+    itemEl.classList.remove('ok', 'nok');
+    okBtn.classList.remove('selecionado');
+    nokBtn.classList.remove('selecionado');
+
+    if (valor === 'OK') {
+      itemEl.classList.add('ok');
+      okBtn.classList.add('selecionado');
+      obsWrapper.classList.remove('visivel');
+    } else {
+      itemEl.classList.add('nok');
+      nokBtn.classList.add('selecionado');
+      obsWrapper.classList.add('visivel');
+    }
+
+    atualizarProgresso();
+  }
+
+  function atualizarProgresso() {
+    const total = maquinaSelecionada.checklist.length;
+    const feitos = Object.keys(respostas).length;
+    const pct = total > 0 ? (feitos / total) * 100 : 0;
+    document.getElementById('progresso-texto').textContent = `${feitos} / ${total} itens`;
+    document.getElementById('barra-fill').style.width = pct + '%';
+  }
+
+  // ===== ASSINATURA =====
+  function iniciarAssinatura() {
+    assinaturaCanvas = document.getElementById('canvas-assinatura');
+    assinaturaCtx = assinaturaCanvas.getContext('2d');
+    assinaturaCanvas.width = assinaturaCanvas.offsetWidth;
+    assinaturaCanvas.height = 140;
+    assinaturaCtx.strokeStyle = '#1A1A1A';
+    assinaturaCtx.lineWidth = 2;
+    assinaturaCtx.lineCap = 'round';
+
+    assinaturaCanvas.addEventListener('mousedown', e => { desenhando = true; assinaturaCtx.beginPath(); assinaturaCtx.moveTo(e.offsetX, e.offsetY); });
+    assinaturaCanvas.addEventListener('mousemove', e => { if (!desenhando) return; assinaturaCtx.lineTo(e.offsetX, e.offsetY); assinaturaCtx.stroke(); });
+    assinaturaCanvas.addEventListener('mouseup', () => desenhando = false);
+    assinaturaCanvas.addEventListener('touchstart', e => { e.preventDefault(); desenhando = true; const r = assinaturaCanvas.getBoundingClientRect(); assinaturaCtx.beginPath(); assinaturaCtx.moveTo(e.touches[0].clientX - r.left, e.touches[0].clientY - r.top); });
+    assinaturaCanvas.addEventListener('touchmove', e => { e.preventDefault(); if (!desenhando) return; const r = assinaturaCanvas.getBoundingClientRect(); assinaturaCtx.lineTo(e.touches[0].clientX - r.left, e.touches[0].clientY - r.top); assinaturaCtx.stroke(); });
+    assinaturaCanvas.addEventListener('touchend', () => desenhando = false);
+  }
+
+  function limparAssinatura() {
+    assinaturaCtx.clearRect(0, 0, assinaturaCanvas.width, assinaturaCanvas.height);
+  }
+
+  function assinaturaVazia() {
+    const data = assinaturaCtx.getImageData(0, 0, assinaturaCanvas.width, assinaturaCanvas.height).data;
+    return !data.some(v => v !== 0);
+  }
+
+  // ===== FINALIZAR =====
+  async function finalizar() {
+    const total = maquinaSelecionada.checklist.length;
+    const feitos = Object.keys(respostas).length;
+
+    if (feitos < total) {
+      mostrarToast(`Responda todos os itens (${feitos}/${total} feitos).`);
+      return;
+    }
+
+    if (assinaturaVazia()) {
+      mostrarToast('Por favor, assine antes de finalizar.');
+      return;
+    }
+
+    const btn = document.getElementById('btn-finalizar');
+    btn.disabled = true;
+    btn.textContent = '⏳ Salvando...';
+
+    const nome = document.getElementById('tecnico-nome').value.trim();
+    const tipo = document.getElementById('tipo-manutencao').value;
+    const obsInicial = document.getElementById('obs-inicial').value.trim();
+    const assinaturaImg = assinaturaCanvas.toDataURL('image/png');
+
+    const itensRegistro = maquinaSelecionada.checklist.map((item, i) => ({
+      texto: item.texto,
+      secao: item.secao || 'Geral',
+      resultado: respostas[i],
+      observacao: document.getElementById(`obs-${i}`)?.value || ''
+    }));
+
+    const registro = {
+      maquinaId: maquinaSelecionada.id,
+      maquinaNome: maquinaSelecionada.nome,
+      maquinaSetor: maquinaSelecionada.setor || '',
+      tecnicoNome: nome,
+      tipoManutencao: tipo,
+      obsInicial,
+      itens: itensRegistro,
+      assinatura: assinaturaImg,
+      dataHora: window._serverTimestamp(),
+      dataHoraLocal: new Date().toLocaleString('pt-BR')
+    };
+
+    try {
+      await window._addDoc(window._collection(window._db, 'manutencoes'), registro);
+      dadosSalvos = registro;
+      exibirSucesso();
+      btn.disabled = false;
+      btn.textContent = '✅ Finalizar e Salvar';
+    } catch (e) {
+      mostrarToast('Erro ao salvar. Tente novamente.');
+      btn.disabled = false;
+      btn.textContent = '✅ Finalizar e Salvar';
+    }
+  }
+
+  function exibirSucesso() {
+    const nok = dadosSalvos.itens.filter(i => i.resultado === 'NOK').length;
+    document.getElementById('resumo-dados').innerHTML = `
+      <div class="resumo-linha"><span>Máquina</span><span>${dadosSalvos.maquinaNome}</span></div>
+      <div class="resumo-linha"><span>Técnico</span><span>${dadosSalvos.tecnicoNome}</span></div>
+      <div class="resumo-linha"><span>Tipo</span><span>${dadosSalvos.tipoManutencao}</span></div>
+      <div class="resumo-linha"><span>Data/Hora</span><span>${dadosSalvos.dataHoraLocal}</span></div>
+      <div class="resumo-linha"><span>Itens OK</span><span style="color:var(--verde)">${dadosSalvos.itens.length - nok} ✔</span></div>
+      <div class="resumo-linha"><span>Itens NOK</span><span style="color:${nok > 0 ? 'var(--vermelho)' : 'var(--verde)'}">${nok} ${nok > 0 ? '✘' : '✔'}</span></div>
+    `;
+    irPara('tela-sucesso');
+  }
+
+  // ===== PDF =====
+  function baixarPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+    const d = dadosSalvos;
+    const nok = d.itens.filter(i => i.resultado === 'NOK').length;
+
+    // Cabeçalho
+    doc.setFillColor(42, 42, 42);
+    doc.rect(0, 0, 210, 30, 'F');
+    doc.setTextColor(245, 166, 35);
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.text('FLUORTECH - Relatório de Manutenção', 14, 14);
+    doc.setTextColor(180, 180, 180);
+    doc.setFontSize(9);
+    doc.text(`Gerado em ${new Date().toLocaleString('pt-BR')}`, 14, 23);
+
+    // Info
+    let y = 40;
+    doc.setTextColor(30, 30, 30);
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+
+    const info = [
+      ['Máquina', d.maquinaNome],
+      ['Setor', d.maquinaSetor || '-'],
+      ['Técnico', d.tecnicoNome],
+      ['Tipo', d.tipoManutencao],
+      ['Data/Hora', d.dataHoraLocal],
+      ['Obs. iniciais', d.obsInicial || '-'],
+    ];
+
+    info.forEach(([k, v]) => {
+      doc.setFont('helvetica', 'bold');
+      doc.text(k + ':', 14, y);
+      doc.setFont('helvetica', 'normal');
+      doc.text(String(v), 55, y);
+      y += 7;
+    });
+
+    y += 4;
+    doc.setFillColor(245, 166, 35);
+    doc.rect(14, y, 182, 6, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9);
+    doc.text('ITEM', 16, y + 4);
+    doc.text('RESULTADO', 160, y + 4);
+    y += 10;
+
+    d.itens.forEach((item, i) => {
+      if (y > 260) { doc.addPage(); y = 20; }
+      const cor = item.resultado === 'OK' ? [76, 175, 80] : [229, 57, 53];
+      if (i % 2 === 0) { doc.setFillColor(245, 245, 245); doc.rect(14, y - 4, 182, 8, 'F'); }
+      doc.setTextColor(30, 30, 30);
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(8);
+      const texto = doc.splitTextToSize(`${i + 1}. ${item.texto}`, 140);
+      doc.text(texto, 16, y);
+      doc.setTextColor(...cor);
+      doc.setFont('helvetica', 'bold');
+      doc.text(item.resultado, 163, y);
+      if (item.observacao) {
+        y += 5;
+        doc.setTextColor(150, 50, 50);
+        doc.setFont('helvetica', 'italic');
+        doc.setFontSize(7);
+        doc.text(`   ↳ ${item.observacao}`, 16, y);
+      }
+      y += 8;
+    });
+
+    // Resumo final
+    y += 4;
+    doc.setFillColor(42, 42, 42);
+    doc.rect(14, y, 182, 10, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9);
+    doc.text(`Total: ${d.itens.length} itens   ✔ OK: ${d.itens.length - nok}   ✘ NOK: ${nok}`, 16, y + 7);
+    y += 18;
+
+    // Assinatura
+    if (d.assinatura) {
+      doc.setTextColor(30, 30, 30);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(9);
+      doc.text('Assinatura do Técnico:', 14, y);
+      y += 4;
+      doc.addImage(d.assinatura, 'PNG', 14, y, 80, 25);
+      y += 30;
+    }
+
+    doc.setFontSize(8);
+    doc.setTextColor(150, 150, 150);
+    doc.setFont('helvetica', 'italic');
+    doc.text(`Fluortech Manutenções · ${d.dataHoraLocal} · Técnico: ${d.tecnicoNome}`, 14, y);
+
+    const nomeArq = `manutencao_${d.maquinaNome.replace(/\s/g,'_')}_${new Date().toLocaleDateString('pt-BR').replace(/\//g,'-')}.pdf`;
+    doc.save(nomeArq);
+  }
+
+  // ===== RESET =====
+  function novaManutencao() {
+    maquinaSelecionada = null;
+    respostas = {};
+    dadosSalvos = null;
+    document.getElementById('tecnico-nome').value = '';
+    document.getElementById('tipo-manutencao').value = '';
+    document.getElementById('obs-inicial').value = '';
+    document.getElementById('busca-maquina').value = '';
+    renderizarMaquinas(todasMaquinas);
+    irPara('tela-maquinas');
+  }
+
+  // ===== TOAST =====
+  function mostrarToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('visivel');
+    setTimeout(() => t.classList.remove('visivel'), 3000);
+  }
+
+  // Expor funções necessárias globalmente
+  window.irPara = irPara;
+  window.filtrarMaquinas = filtrarMaquinas;
+  window.selecionarMaquina = selecionarMaquina;
+  window.iniciarChecklist = iniciarChecklist;
+  window.responder = responder;
+  window.limparAssinatura = limparAssinatura;
+  window.finalizar = finalizar;
+  window.baixarPDF = baixarPDF;
+  window.novaManutencao = novaManutencao;
+  window.carregarMaquinas = carregarMaquinas;
+</script>
+
+</body>
+</html>
