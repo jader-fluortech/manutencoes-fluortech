@@ -193,6 +193,32 @@
     .spinner { width: 36px; height: 36px; border: 3px solid #C5CBDF; border-top-color: var(--cor-destaque); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
+    /* ===== ADMIN ===== */
+    .admin-link { text-align: center; margin-top: 16px; }
+    .admin-link a { font-size: 0.72rem; color: #bbb; text-decoration: none; opacity: 0.5; }
+    .admin-link a:hover { opacity: 1; color: #888; }
+    .admin-login-box { background: var(--cor-fundo-card); border: 1px solid var(--cor-borda); border-radius: 16px; padding: 28px 24px; width: 100%; max-width: 340px; }
+    .admin-login-box h3 { font-size: 1rem; color: var(--cor-destaque); margin-bottom: 16px; text-align: center; }
+    .maquina-lista-admin { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; max-height: 400px; overflow-y: auto; }
+    .maquina-item-admin { background: var(--cor-fundo-card); border: 1px solid var(--cor-borda); border-radius: 8px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .maquina-item-admin .info { flex: 1; }
+    .maquina-item-admin .info strong { font-size: 0.9rem; display: block; }
+    .maquina-item-admin .info span { font-size: 0.78rem; color: #666; }
+    .maquina-item-admin .acoes { display: flex; gap: 6px; flex-shrink: 0; }
+    .btn-editar { background: var(--cor-fundo-interno); border: 1px solid var(--cor-borda); color: var(--cor-destaque); border-radius: 6px; padding: 5px 10px; font-size: 0.78rem; cursor: pointer; }
+    .btn-excluir { background: rgba(198,40,40,0.1); border: 1px solid rgba(198,40,40,0.3); color: var(--cor-nok); border-radius: 6px; padding: 5px 10px; font-size: 0.78rem; cursor: pointer; }
+    .btn-editar:hover { background: var(--cor-destaque); color: #fff; }
+    .btn-excluir:hover { background: var(--cor-nok); color: #fff; }
+    .checklist-admin { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+    .checklist-item-admin { display: flex; gap: 6px; align-items: center; }
+    .checklist-item-admin input { flex: 1; padding: 8px 10px; background: var(--cor-fundo-interno); border: 1px solid var(--cor-borda); border-radius: 6px; color: var(--cor-texto); font-size: 0.85rem; }
+    .checklist-item-admin button { background: rgba(198,40,40,0.1); border: 1px solid rgba(198,40,40,0.3); color: var(--cor-nok); border-radius: 6px; padding: 5px 8px; cursor: pointer; font-size: 0.8rem; flex-shrink: 0; }
+    .btn-add-item { background: var(--cor-fundo-interno); border: 1px dashed var(--cor-borda); color: #666; border-radius: 6px; padding: 8px; width: 100%; cursor: pointer; font-size: 0.82rem; margin-top: 4px; }
+    .btn-add-item:hover { border-color: var(--cor-destaque); color: var(--cor-destaque); }
+    .admin-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
+    .admin-tab { flex: 1; padding: 10px; background: var(--cor-fundo-interno); border: 1px solid var(--cor-borda); border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 600; color: #666; text-align: center; }
+    .admin-tab.ativa { background: var(--cor-destaque); color: #fff; border-color: var(--cor-destaque); }
+
     @media (max-width: 480px) {
       header h1 { font-size: 1rem; }
       .container, .container-wide { padding: 16px 12px; }
@@ -246,6 +272,73 @@
       </div>
       <div class="erro-login" id="erro-login">Senha incorreta. Tente novamente.</div>
       <button class="btn btn-primario" onclick="entrar()">Entrar →</button>
+      <div class="admin-link"><a href="#" onclick="abrirAdminLogin();return false;">acesso admin</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL ADMIN LOGIN ===== -->
+<div class="modal-overlay" id="modal-admin-login">
+  <div class="admin-login-box">
+    <h3>🔐 Acesso Administrativo</h3>
+    <div class="form-grupo">
+      <label>Senha Admin</label>
+      <input type="password" id="input-senha-admin" placeholder="Digite a senha" onkeydown="if(event.key==='Enter') entrarAdmin()" />
+    </div>
+    <div class="erro-login" id="erro-admin" style="display:none">Senha incorreta.</div>
+    <button class="btn btn-primario" onclick="entrarAdmin()" style="margin-bottom:10px">Entrar</button>
+    <button class="btn btn-secundario" onclick="fecharAdminLogin()">Cancelar</button>
+  </div>
+</div>
+
+<!-- ===== TELA ADMIN ===== -->
+<div id="tela-admin" class="tela">
+  <div class="container">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+      <h2 style="font-size:1.1rem;color:var(--cor-destaque)">⚙️ Administração de Máquinas</h2>
+      <button class="btn-sair" onclick="sairAdmin()">Sair</button>
+    </div>
+
+    <div class="admin-tabs">
+      <div class="admin-tab ativa" id="tab-lista" onclick="mostrarTabAdmin('lista')">📋 Máquinas</div>
+      <div class="admin-tab" id="tab-nova" onclick="mostrarTabAdmin('nova')">➕ Nova Máquina</div>
+    </div>
+
+    <!-- Lista de máquinas -->
+    <div id="admin-lista">
+      <div class="busca-wrapper" style="margin-bottom:12px">
+        <span class="icone-busca">🔍</span>
+        <input type="text" placeholder="Buscar máquina..." oninput="filtrarAdmin(this.value)" />
+      </div>
+      <div class="maquina-lista-admin" id="maquina-lista-admin">
+        <div class="loading ativo"><div class="spinner"></div>Carregando...</div>
+      </div>
+    </div>
+
+    <!-- Formulário nova/editar máquina -->
+    <div id="admin-form" style="display:none">
+      <input type="hidden" id="admin-maquina-id" />
+      <div class="form-grupo">
+        <label>Nome da Máquina</label>
+        <input type="text" id="admin-nome" placeholder="Ex: E016" />
+      </div>
+      <div class="form-grupo">
+        <label>Setor</label>
+        <select id="admin-setor">
+          <option value="">Selecione...</option>
+          <option value="Moldagem">Moldagem</option>
+          <option value="Sinterização">Sinterização</option>
+          <option value="Usinagem">Usinagem</option>
+          <option value="Tamboreamento">Tamboreamento</option>
+        </select>
+      </div>
+      <div class="form-grupo">
+        <label>Itens do Checklist</label>
+        <div class="checklist-admin" id="checklist-admin"></div>
+        <button class="btn-add-item" onclick="addItemChecklist()">+ Adicionar item</button>
+      </div>
+      <button class="btn btn-primario" onclick="salvarMaquinaAdmin()" style="margin-bottom:10px" id="btn-salvar-admin">💾 Salvar Máquina</button>
+      <button class="btn btn-secundario" onclick="cancelarFormAdmin()">Cancelar</button>
     </div>
   </div>
 </div>
@@ -427,7 +520,7 @@
 <!-- ===== FIREBASE ===== -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getFirestore, collection, getDocs, addDoc, serverTimestamp, orderBy, query }
+  import { getFirestore, collection, getDocs, addDoc, serverTimestamp, orderBy, query, doc, deleteDoc, setDoc }
     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
   const firebaseConfig = {
@@ -449,6 +542,9 @@
   window._serverTimestamp = serverTimestamp;
   window._orderBy = orderBy;
   window._query = query;
+  window._doc = doc;
+  window._deleteDoc = deleteDoc;
+  window._setDoc = setDoc;
 </script>
 
 <script>
@@ -983,6 +1079,175 @@
     registroModal = null;
   }
 
+  // ===== ADMIN =====
+  const SENHA_ADMIN = '123456';
+  let maquinasAdmin = [];
+
+  function abrirAdminLogin() {
+    document.getElementById('modal-admin-login').classList.add('ativo');
+    document.getElementById('input-senha-admin').value = '';
+    document.getElementById('erro-admin').style.display = 'none';
+    setTimeout(() => document.getElementById('input-senha-admin').focus(), 100);
+  }
+
+  function fecharAdminLogin() {
+    document.getElementById('modal-admin-login').classList.remove('ativo');
+  }
+
+  function entrarAdmin() {
+    const senha = document.getElementById('input-senha-admin').value;
+    if (senha !== SENHA_ADMIN) {
+      document.getElementById('erro-admin').style.display = 'block';
+      return;
+    }
+    fecharAdminLogin();
+    carregarMaquinasAdmin();
+    irPara('tela-admin');
+  }
+
+  function sairAdmin() {
+    irPara('tela-login');
+  }
+
+  function mostrarTabAdmin(tab) {
+    document.getElementById('tab-lista').classList.toggle('ativa', tab === 'lista');
+    document.getElementById('tab-nova').classList.toggle('ativa', tab === 'nova');
+    document.getElementById('admin-lista').style.display = tab === 'lista' ? 'block' : 'none';
+    document.getElementById('admin-form').style.display = tab === 'nova' ? 'block' : 'none';
+    if (tab === 'nova') {
+      document.getElementById('admin-maquina-id').value = '';
+      document.getElementById('admin-nome').value = '';
+      document.getElementById('admin-setor').value = '';
+      document.getElementById('btn-salvar-admin').textContent = '💾 Salvar Máquina';
+      renderizarChecklistAdmin([{ secao: 'Inspeção Geral', texto: '' }]);
+    }
+  }
+
+  async function carregarMaquinasAdmin() {
+    const snap = await window._getDocs(window._collection(window._db, 'maquinas'));
+    maquinasAdmin = [];
+    snap.forEach(d => maquinasAdmin.push({ id: d.id, ...d.data() }));
+    maquinasAdmin.sort((a, b) => a.nome.localeCompare(b.nome));
+    renderizarListaAdmin(maquinasAdmin);
+  }
+
+  function renderizarListaAdmin(lista) {
+    const el = document.getElementById('maquina-lista-admin');
+    if (lista.length === 0) { el.innerHTML = '<p style="color:#aaa;padding:16px;text-align:center">Nenhuma máquina encontrada.</p>'; return; }
+    el.innerHTML = lista.map(m => `
+      <div class="maquina-item-admin">
+        <div class="info">
+          <strong>${m.nome}</strong>
+          <span>${m.setor || ''} · ${(m.checklist || []).length} itens</span>
+        </div>
+        <div class="acoes">
+          <button class="btn-editar" onclick="editarMaquinaAdmin('${m.id}')">✏️ Editar</button>
+          <button class="btn-excluir" onclick="excluirMaquinaAdmin('${m.id}', '${m.nome}')">🗑️ Excluir</button>
+        </div>
+      </div>`).join('');
+  }
+
+  function filtrarAdmin(q) {
+    const filtradas = maquinasAdmin.filter(m =>
+      m.nome.toLowerCase().includes(q.toLowerCase()) ||
+      (m.setor || '').toLowerCase().includes(q.toLowerCase())
+    );
+    renderizarListaAdmin(filtradas);
+  }
+
+  function renderizarChecklistAdmin(itens) {
+    const el = document.getElementById('checklist-admin');
+    el.innerHTML = itens.map((item, i) => `
+      <div class="checklist-item-admin" id="checklist-item-${i}">
+        <input type="text" placeholder="Descrição do item..." value="${item.texto || ''}" data-index="${i}" />
+        <button onclick="removerItemChecklist(${i})">✕</button>
+      </div>`).join('');
+  }
+
+  function addItemChecklist() {
+    const inputs = document.querySelectorAll('#checklist-admin input[type=text]');
+    const itens = Array.from(inputs).map(inp => ({ secao: 'Inspeção Geral', texto: inp.value }));
+    itens.push({ secao: 'Inspeção Geral', texto: '' });
+    renderizarChecklistAdmin(itens);
+    document.querySelectorAll('#checklist-admin input[type=text]').item(itens.length - 1).focus();
+  }
+
+  function removerItemChecklist(index) {
+    const inputs = document.querySelectorAll('#checklist-admin input[type=text]');
+    const itens = Array.from(inputs).map(inp => ({ secao: 'Inspeção Geral', texto: inp.value }));
+    itens.splice(index, 1);
+    if (itens.length === 0) itens.push({ secao: 'Inspeção Geral', texto: '' });
+    renderizarChecklistAdmin(itens);
+  }
+
+  function editarMaquinaAdmin(id) {
+    const m = maquinasAdmin.find(m => m.id === id);
+    if (!m) return;
+    document.getElementById('admin-maquina-id').value = id;
+    document.getElementById('admin-nome').value = m.nome;
+    document.getElementById('admin-setor').value = m.setor || '';
+    document.getElementById('btn-salvar-admin').textContent = '💾 Atualizar Máquina';
+    renderizarChecklistAdmin(m.checklist || [{ secao: 'Inspeção Geral', texto: '' }]);
+    mostrarTabAdmin('nova');
+    document.getElementById('tab-nova').textContent = '✏️ Editando';
+  }
+
+  async function salvarMaquinaAdmin() {
+    const id = document.getElementById('admin-maquina-id').value;
+    const nome = document.getElementById('admin-nome').value.trim();
+    const setor = document.getElementById('admin-setor').value;
+    if (!nome) { mostrarToast('Informe o nome da máquina.'); return; }
+    if (!setor) { mostrarToast('Selecione o setor.'); return; }
+
+    const inputs = document.querySelectorAll('#checklist-admin input[type=text]');
+    const checklist = Array.from(inputs)
+      .map(inp => ({ secao: 'Inspeção Geral', texto: inp.value.trim() }))
+      .filter(i => i.texto !== '');
+
+    if (checklist.length === 0) { mostrarToast('Adicione pelo menos um item no checklist.'); return; }
+
+    const btn = document.getElementById('btn-salvar-admin');
+    btn.disabled = true;
+    btn.textContent = '⏳ Salvando...';
+
+    const dados = { nome, setor, checklist, icone: '' };
+
+    try {
+      if (id) {
+        await window._setDoc(window._doc(window._db, 'maquinas', id), dados);
+        mostrarToast('✅ Máquina atualizada com sucesso!');
+      } else {
+        await window._addDoc(window._collection(window._db, 'maquinas'), dados);
+        mostrarToast('✅ Máquina cadastrada com sucesso!');
+      }
+      await carregarMaquinasAdmin();
+      await carregarMaquinas();
+      mostrarTabAdmin('lista');
+      document.getElementById('tab-nova').textContent = '➕ Nova Máquina';
+    } catch (e) {
+      mostrarToast('Erro ao salvar. Tente novamente.');
+    }
+    btn.disabled = false;
+    btn.textContent = '💾 Salvar Máquina';
+  }
+
+  async function excluirMaquinaAdmin(id, nome) {
+    if (!confirm(`Tem certeza que deseja excluir a máquina "${nome}"? Esta ação não pode ser desfeita.`)) return;
+    try {
+      await window._deleteDoc(window._doc(window._db, 'maquinas', id));
+      mostrarToast(`✅ Máquina ${nome} excluída.`);
+      await carregarMaquinasAdmin();
+      await carregarMaquinas();
+    } catch (e) {
+      mostrarToast('Erro ao excluir. Tente novamente.');
+    }
+  }
+
+  function cancelarFormAdmin() {
+    mostrarTabAdmin('lista');
+    document.getElementById('tab-nova').textContent = '➕ Nova Máquina';
+  }
+
   // ===== EXPORTAR EXCEL =====
   function exportarExcel() {
     const mes = document.getElementById('filtro-mes').value;
@@ -1079,6 +1344,18 @@
   window.carregarMaquinas = carregarMaquinas;
   window.filtrarPainel = filtrarPainel;
   window.exportarExcel = exportarExcel;
+  window.abrirAdminLogin = abrirAdminLogin;
+  window.fecharAdminLogin = fecharAdminLogin;
+  window.entrarAdmin = entrarAdmin;
+  window.sairAdmin = sairAdmin;
+  window.mostrarTabAdmin = mostrarTabAdmin;
+  window.addItemChecklist = addItemChecklist;
+  window.removerItemChecklist = removerItemChecklist;
+  window.editarMaquinaAdmin = editarMaquinaAdmin;
+  window.salvarMaquinaAdmin = salvarMaquinaAdmin;
+  window.excluirMaquinaAdmin = excluirMaquinaAdmin;
+  window.cancelarFormAdmin = cancelarFormAdmin;
+  window.filtrarAdmin = filtrarAdmin;
   window.abrirModal = abrirModal;
   window.fecharModal = fecharModal;
 </script>
