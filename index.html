@@ -565,7 +565,8 @@
 
 <script>
   // ===== CONFIGURAÇÕES =====
-  const SENHA = '12345';
+  const SENHA_TECNICO = '1234';
+  const SENHA_GESTOR = '12345';
   const BREVO_API_KEY = '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';
   const EMAILS_DESTINO = [
     'jaderfilho@fluortech.com.br'
@@ -619,7 +620,8 @@
 
     if (!perfilSelecionado) { mostrarToast('Selecione Técnico ou Gestor.'); return; }
     const senha = document.getElementById('input-senha').value;
-    if (senha !== SENHA) { erro.classList.add('visivel'); return; }
+    const senhaCorreta = perfilSelecionado === 'tecnico' ? SENHA_TECNICO : SENHA_GESTOR;
+    if (senha !== senhaCorreta) { erro.classList.add('visivel'); return; }
 
     document.getElementById('header-right').style.display = 'flex';
     document.getElementById('badge-perfil').textContent = perfilSelecionado === 'tecnico' ? '🔧 Técnico' : '📊 Gestor';
