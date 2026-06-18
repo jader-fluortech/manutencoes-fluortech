@@ -76,14 +76,14 @@
     .lista-maquinas::-webkit-scrollbar-thumb { background: var(--cor-borda); border-radius: 4px; }
     .card-maquina { background: var(--cor-fundo-card); border: 1px solid var(--cor-borda); border-radius: 10px; padding: 14px 16px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 14px; }
     .card-maquina:hover { border-color: var(--cor-destaque); background: var(--cor-fundo-interno); }
-    .card-maquina .icone-maquina { font-size: 26px; flex-shrink: 0; }
+
     .card-maquina .info h3 { font-size: 0.95rem; font-weight: 600; }
     .card-maquina .info p { font-size: 0.78rem; color: #999; margin-top: 2px; }
     .card-maquina .seta { margin-left: auto; color: var(--cor-destaque); font-size: 20px; }
 
     /* ===== MAQUINA HEADER ===== */
     .maquina-header { background: var(--cor-fundo-card); border: 1px solid var(--cor-borda); border-radius: 10px; padding: 14px 16px; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
-    .maquina-header .icone { font-size: 28px; }
+
     .maquina-header h2 { font-size: 1rem; font-weight: 700; }
     .maquina-header p { font-size: 0.78rem; color: #999; }
 
@@ -637,7 +637,6 @@
     if (lista.length === 0) { el.innerHTML = '<p style="color:#aaa;padding:16px;text-align:center">Nenhuma máquina encontrada.</p>'; return; }
     el.innerHTML = lista.map(m => `
       <div class="card-maquina" onclick="selecionarMaquina('${m.id}')">
-        <div class="icone-maquina">${m.icone || '⚙️'}</div>
         <div class="info"><h3>${m.nome}</h3><p>${m.setor || ''} · ${(m.checklist || []).length} itens</p></div>
         <div class="seta">›</div>
       </div>
@@ -652,7 +651,7 @@
   function selecionarMaquina(id) {
     maquinaSelecionada = todasMaquinas.find(m => m.id === id);
     respostas = {};
-    const html = `<div class="icone">${maquinaSelecionada.icone || '⚙️'}</div><div><h2>${maquinaSelecionada.nome}</h2><p>${maquinaSelecionada.setor || ''}</p></div>`;
+    const html = `<div><h2>${maquinaSelecionada.nome}</h2><p>${maquinaSelecionada.setor || ''}</p></div>`;
     document.getElementById('header-maquina-tecnico').innerHTML = html;
     document.getElementById('header-maquina-checklist').innerHTML = html;
     irPara('tela-tecnico');
@@ -1230,7 +1229,7 @@
     btn.disabled = true;
     btn.textContent = '⏳ Salvando...';
 
-    const dados = { nome, setor, checklist, icone: '' };
+    const dados = { nome, setor, checklist };
 
     try {
       if (id) {
