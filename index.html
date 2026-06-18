@@ -550,6 +550,17 @@
   window._doc = doc;
   window._deleteDoc = deleteDoc;
   window._setDoc = setDoc;
+
+  // Restaurar sessão ao recarregar a página
+  const flLogado = sessionStorage.getItem('fl_logado');
+  const flPerfil = sessionStorage.getItem('fl_perfil');
+  const flTela = sessionStorage.getItem('fl_tela');
+
+  if (flLogado && flPerfil) {
+    window._perfilSessao = flPerfil;
+    window._telaSessao = flTela;
+    window._restaurarSessao = true;
+  }
 </script>
 
 <script>
@@ -568,6 +579,26 @@
   let respostas = {};
   let assinaturaCanvas, assinaturaCtx, desenhando = false;
   let dadosSalvos = null;
+
+  // Restaurar sessão se existir
+  window.addEventListener('load', async () => {
+    if (window._restaurarSessao && window._perfilSessao) {
+      perfilSelecionado = window._perfilSessao;
+      document.getElementById('header-right').style.display = 'flex';
+      document.getElementById('badge-perfil').textContent = perfilSelecionado === 'tecnico' ? '🔧 Técnico' : '📊 Gestor';
+      if (perfilSelecionado === 'admin') {
+        document.getElementById('badge-perfil').textContent = '🔐 Admin';
+        await carregarMaquinasAdmin();
+        irPara('tela-admin');
+      } else if (perfilSelecionado === 'tecnico') {
+        await carregarMaquinas();
+        irPara('tela-maquinas');
+      } else {
+        await carregarPainel();
+        irPara('tela-painel');
+      }
+    }
+  });
   let todasMaquinas = [];
   let todosRegistros = [];
   let registroModal = null;
@@ -590,6 +621,8 @@
 
     document.getElementById('header-right').style.display = 'flex';
     document.getElementById('badge-perfil').textContent = perfilSelecionado === 'tecnico' ? '🔧 Técnico' : '📊 Gestor';
+    sessionStorage.setItem('fl_perfil', perfilSelecionado);
+    sessionStorage.setItem('fl_logado', '1');
 
     if (perfilSelecionado === 'tecnico') {
       carregarMaquinas();
@@ -605,6 +638,7 @@
     maquinaSelecionada = null;
     respostas = {};
     dadosSalvos = null;
+    sessionStorage.clear();
     document.getElementById('input-senha').value = '';
     document.getElementById('btn-tecnico').classList.remove('selecionado');
     document.getElementById('btn-gestor').classList.remove('selecionado');
@@ -617,6 +651,11 @@
     document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa'));
     document.getElementById(telaId).classList.add('ativa');
     window.scrollTo(0, 0);
+    // Salvar estado da sessão
+    if (telaId !== 'tela-login') {
+      sessionStorage.setItem('fl_tela', telaId);
+      sessionStorage.setItem('fl_perfil', perfilSelecionado || '');
+    }
   }
 
   // ===== MÁQUINAS =====
@@ -1105,11 +1144,15 @@
       return;
     }
     fecharAdminLogin();
+    sessionStorage.setItem('fl_logado', '1');
+    sessionStorage.setItem('fl_perfil', 'admin');
+    sessionStorage.setItem('fl_tela', 'tela-admin');
     carregarMaquinasAdmin();
     irPara('tela-admin');
   }
 
   function sairAdmin() {
+    sessionStorage.clear();
     irPara('tela-login');
   }
 
