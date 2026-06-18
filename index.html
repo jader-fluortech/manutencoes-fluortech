@@ -585,15 +585,17 @@
     if (window._restaurarSessao && window._perfilSessao) {
       perfilSelecionado = window._perfilSessao;
       document.getElementById('header-right').style.display = 'flex';
-      document.getElementById('badge-perfil').textContent = perfilSelecionado === 'tecnico' ? '🔧 Técnico' : '📊 Gestor';
+
       if (perfilSelecionado === 'admin') {
         document.getElementById('badge-perfil').textContent = '🔐 Admin';
         await carregarMaquinasAdmin();
         irPara('tela-admin');
       } else if (perfilSelecionado === 'tecnico') {
+        document.getElementById('badge-perfil').textContent = '🔧 Técnico';
         await carregarMaquinas();
         irPara('tela-maquinas');
       } else {
+        document.getElementById('badge-perfil').textContent = '📊 Gestor';
         await carregarPainel();
         irPara('tela-painel');
       }
