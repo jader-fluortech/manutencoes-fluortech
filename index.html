@@ -1189,17 +1189,27 @@
   function editarMaquinaAdmin(id) {
     const m = maquinasAdmin.find(m => m.id === id);
     if (!m) return;
+
+    // Mostrar aba primeiro (sem resetar campos)
+    document.getElementById('tab-lista').classList.remove('ativa');
+    document.getElementById('tab-nova').classList.add('ativa');
+    document.getElementById('admin-lista').style.display = 'none';
+    document.getElementById('admin-form').style.display = 'block';
+    document.getElementById('tab-nova').textContent = '✏️ Editando';
+
+    // Preencher campos
     document.getElementById('admin-maquina-id').value = id;
     document.getElementById('admin-nome').value = m.nome;
     document.getElementById('admin-setor').value = m.setor || '';
     document.getElementById('btn-salvar-admin').textContent = '💾 Atualizar Máquina';
     renderizarChecklistAdmin(m.checklist && m.checklist.length > 0 ? m.checklist : [{ secao: 'Inspeção Geral', texto: '' }]);
+
     // Mostrar cabeçalho de identificação
     document.getElementById('admin-cabecalho-edicao').style.display = 'block';
     document.getElementById('admin-cabecalho-nome').textContent = m.nome;
     document.getElementById('admin-cabecalho-setor').textContent = (m.setor || '') + ' · ' + (m.checklist || []).length + ' itens no checklist';
-    mostrarTabAdmin('nova');
-    document.getElementById('tab-nova').textContent = '✏️ Editando';
+
+    window.scrollTo(0, 0);
   }
 
   async function salvarMaquinaAdmin() {
