@@ -653,10 +653,13 @@
     document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa'));
     document.getElementById(telaId).classList.add('ativa');
     window.scrollTo(0, 0);
-    // Salvar estado da sessão
+    // Salvar estado da sessão — não sobrescrever se admin
     if (telaId !== 'tela-login') {
       sessionStorage.setItem('fl_tela', telaId);
-      sessionStorage.setItem('fl_perfil', perfilSelecionado || '');
+      const perfilAtual = sessionStorage.getItem('fl_perfil');
+      if (perfilAtual !== 'admin') {
+        sessionStorage.setItem('fl_perfil', perfilSelecionado || '');
+      }
     }
   }
 
