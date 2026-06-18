@@ -318,6 +318,11 @@
     <!-- Formulário nova/editar máquina -->
     <div id="admin-form" style="display:none">
       <input type="hidden" id="admin-maquina-id" />
+      <div id="admin-cabecalho-edicao" style="display:none;background:var(--cor-fundo-interno);border:1px solid var(--cor-borda);border-left:4px solid var(--cor-destaque);border-radius:8px;padding:12px 16px;margin-bottom:16px">
+        <div style="font-size:0.75rem;color:#666;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px">Editando máquina</div>
+        <div style="font-size:1rem;font-weight:700;color:var(--cor-destaque)" id="admin-cabecalho-nome"></div>
+        <div style="font-size:0.8rem;color:#666;margin-top:2px" id="admin-cabecalho-setor"></div>
+      </div>
       <div class="form-grupo">
         <label>Nome da Máquina</label>
         <input type="text" id="admin-nome" placeholder="Ex: E016" />
@@ -1119,6 +1124,7 @@
       document.getElementById('admin-nome').value = '';
       document.getElementById('admin-setor').value = '';
       document.getElementById('btn-salvar-admin').textContent = '💾 Salvar Máquina';
+      document.getElementById('admin-cabecalho-edicao').style.display = 'none';
       renderizarChecklistAdmin([{ secao: 'Inspeção Geral', texto: '' }]);
     }
   }
@@ -1187,7 +1193,11 @@
     document.getElementById('admin-nome').value = m.nome;
     document.getElementById('admin-setor').value = m.setor || '';
     document.getElementById('btn-salvar-admin').textContent = '💾 Atualizar Máquina';
-    renderizarChecklistAdmin(m.checklist || [{ secao: 'Inspeção Geral', texto: '' }]);
+    renderizarChecklistAdmin(m.checklist && m.checklist.length > 0 ? m.checklist : [{ secao: 'Inspeção Geral', texto: '' }]);
+    // Mostrar cabeçalho de identificação
+    document.getElementById('admin-cabecalho-edicao').style.display = 'block';
+    document.getElementById('admin-cabecalho-nome').textContent = m.nome;
+    document.getElementById('admin-cabecalho-setor').textContent = (m.setor || '') + ' · ' + (m.checklist || []).length + ' itens no checklist';
     mostrarTabAdmin('nova');
     document.getElementById('tab-nova').textContent = '✏️ Editando';
   }
