@@ -670,7 +670,10 @@
     try {
       const snap = await window._getDocs(window._collection(window._db, 'maquinas'));
       todasMaquinas = [];
-      snap.forEach(doc => todasMaquinas.push({ id: doc.id, ...doc.data() }));
+      snap.forEach(doc => {
+        const data = doc.data();
+        if (data.nome) todasMaquinas.push({ id: doc.id, ...data });
+      });
       todasMaquinas.sort((a, b) => a.nome.localeCompare(b.nome));
       renderizarMaquinas(todasMaquinas);
     } catch (e) {
