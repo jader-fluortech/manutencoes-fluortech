@@ -892,7 +892,7 @@
     doc.text(`Gerado em ${new Date().toLocaleString('pt-BR')}`, 14, 23);
     let y = 40;
     doc.setTextColor(30, 30, 30); doc.setFontSize(10);
-    [['Máquina', d.maquinaNome], ['Setor', d.maquinaSetor || '-'], ['Técnico', d.tecnicoNome],
+    [['Código', d.codigoFormulario || '-'], ['Máquina', d.maquinaNome], ['Setor', d.maquinaSetor || '-'], ['Técnico', d.tecnicoNome],
      ['Tipo', d.tipoManutencao], ['Data/Hora', d.dataHoraLocal], ['Obs. iniciais', d.obsInicial || '-']
     ].forEach(([k, v]) => {
       doc.setFont('helvetica', 'bold'); doc.text(k + ':', 14, y);
