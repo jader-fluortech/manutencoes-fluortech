@@ -33,9 +33,32 @@ As senhas estão definidas no `index.html`:
 
 **Técnico** — Acessa a lista de máquinas, preenche o checklist, assina digitalmente e finaliza. Ao finalizar, o sistema salva no Firebase e envia email com PDF em anexo.
 
-**Gestor** — Acessa o painel com histórico de todas as manutenções, filtros por data/mês/ano/setor/tipo, visualização de detalhes, download de PDF e exportação para Excel (CSV com separador `;`).
+**Gestor** — Acessa o painel com histórico de todas as manutenções, filtros por mês/ano/setor/tipo, visualização de detalhes, download de PDF e exportação para Excel (CSV com separador `;`).
 
-**Admin** — Acessa via link discreto "acesso admin" na tela de login. Permite adicionar, editar e excluir máquinas e checklists. Link não aparece após login.
+**Admin** — Acessa via link discreto "acesso admin" na tela de login. Permite adicionar, editar e excluir máquinas e checklists. Sessão persiste ao recarregar a página (sessionStorage).
+
+---
+
+## Código de formulário
+
+Gerado automaticamente ao finalizar cada manutenção. Formato:
+
+| Tipo | Prefixo | Exemplo |
+|---|---|---|
+| Preditiva | PD | PD0626A001 |
+| Preventiva | PV | PV0626E005 |
+| Corretiva | C | C0626B001 |
+| Inspeção | I | I0626H013 |
+
+Estrutura: `[PREFIXO][MÊS][ANO][CÓDIGO_MÁQUINA]`
+
+O código aparece em:
+- Tela de sucesso após finalizar
+- PDF gerado (campo após Obs. iniciais)
+- Email enviado
+- Painel do gestor (primeira coluna)
+- Modal de detalhes
+- Exportação Excel
 
 ---
 
@@ -69,6 +92,7 @@ appId: "1:524530859774:web:3d784e49984d45a85a2faf"
 - `assinatura` (string base64)
 - `dataHora` (timestamp Firebase)
 - `dataHoraLocal` (string) — Ex: "19/06/2026, 15:30:00"
+- `codigoFormulario` (string) — Ex: "C0626E005"
 
 ### Regras do Firebase
 
@@ -120,8 +144,25 @@ const EMAILS_DESTINO = [
 ```
 
 O email é enviado automaticamente ao finalizar um checklist com:
-- Corpo HTML com resumo da manutenção
+- Corpo HTML com resumo da manutenção e código do formulário
 - PDF assinado em anexo
+
+---
+
+## Cores do site
+
+```css
+--cor-destaque: #111D5C;        /* azul escuro Fluortech */
+--cor-destaque-hover: #1E2F8A;  /* azul médio */
+--cor-fundo-tela: #FFFFFF;      /* branco */
+--cor-fundo-card: #F4F6FB;      /* azul muito claro */
+--cor-fundo-interno: #EEF1F8;   /* azul suave */
+--cor-borda: #C5CBDF;           /* azul acinzentado */
+--cor-texto: #1A1A2E;           /* azul quase preto */
+--cor-ok: #2E7D32;              /* verde escuro */
+--cor-nok: #C62828;             /* vermelho escuro */
+--cor-link: #1565C0;            /* azul */
+```
 
 ---
 
@@ -198,20 +239,18 @@ O email é enviado automaticamente ao finalizar um checklist com:
 
 ---
 
-## Cores do site
+## Checklists por setor
 
-```css
---cor-destaque: #111D5C;        /* azul escuro Fluortech */
---cor-destaque-hover: #1E2F8A;  /* azul médio */
---cor-fundo-tela: #FFFFFF;      /* branco */
---cor-fundo-card: #F4F6FB;      /* azul muito claro */
---cor-fundo-interno: #EEF1F8;   /* azul suave */
---cor-borda: #C5CBDF;           /* azul acinzentado */
---cor-texto: #1A1A2E;           /* azul quase preto */
---cor-ok: #2E7D32;              /* verde escuro */
---cor-nok: #C62828;             /* vermelho escuro */
---cor-link: #1565C0;            /* azul */
-```
+| Setor | Itens |
+|---|---|
+| Moldagem | Verificar nível de óleo hidráulico / Verificar pressão do sistema hidráulico / Inspecionar estado dos moldes e matrizes |
+| Sinterização | Verificar temperatura de operação do forno / Inspecionar resistências e elementos de aquecimento / Verificar sistema de exaustão e ventilação |
+| Usinagem | Verificar nível de fluido de corte (refrigerante) / Inspecionar ferramentas de corte e desgaste / Verificar lubrificação dos guias e eixos |
+| Tamboreamento | Verificar fixação e estado do tambor / Inspecionar motor e correia de transmissão / Verificar nível de abrasivo e estado das peças |
+| Acabamento | Simbólico — editar via acesso admin |
+| Externo | Simbólico — editar via acesso admin |
+| N/A | Simbólico — editar via acesso admin |
+| Inspeção | Simbólico — editar via acesso admin |
 
 ---
 
@@ -224,14 +263,22 @@ O email é enviado automaticamente ao finalizar um checklist com:
 5. Clique em "Commit changes" → "Commit changes"
 6. Aguarde 2 minutos para o site atualizar
 
----
-
 ## Como rodar scripts no Firebase
 
 1. Abra o site no navegador
 2. Pressione F12 → aba Console
 3. Cole o script e pressione Enter
 4. Se precisar escrever em máquinas, abra as regras temporariamente antes
+5. Sempre restaurar as regras padrão após terminar
+
+## Como adicionar novos anos no filtro do painel
+
+No `index.html`, procure o bloco:
+```html
+<option value="2026">2026</option>
+<option value="2027">2027</option>
+```
+E adicione mais linhas seguindo o mesmo padrão.
 
 ---
 
