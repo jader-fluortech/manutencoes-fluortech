@@ -797,7 +797,7 @@
   function assinaturaVazia() { return !assinaturaCtx.getImageData(0, 0, assinaturaCanvas.width, assinaturaCanvas.height).data.some(v => v !== 0); }
 
   // ===== CÓDIGO DO FORMULÁRIO =====
-  function gerarCodigoFormulario(tipo, dataHoraLocal, maquinaNome) {
+  function gerarCodigoFormulario(tipo, maquinaNome) {
     const prefixos = {
       'Preditiva': 'PD',
       'Preventiva': 'PV',
@@ -805,11 +805,11 @@
       'Corretiva': 'C'
     };
     const prefixo = prefixos[tipo] || 'M';
-    // Extrair mês e ano da data local (formato dd/mm/aaaa, hh:mm:ss)
-    const partes = dataHoraLocal.split('/');
-    const mes = partes[1] ? partes[1].padStart(2, '0') : '00';
-    const ano = partes[2] ? partes[2].split(',')[0].trim().slice(-2) : '00';
-    // Extrair código da máquina (tudo antes do primeiro espaço ou traço)
+    // Usar Date diretamente para evitar problemas de formato
+    const agora = new Date();
+    const mes = String(agora.getMonth() + 1).padStart(2, '0');
+    const ano = String(agora.getFullYear()).slice(-2);
+    // Extrair código da máquina (tudo antes do traço)
     const codigoMaquina = maquinaNome.split(' - ')[0].trim().replace(/\s/g, '');
     return `${prefixo}${mes}${ano}${codigoMaquina}`;
   }
@@ -835,7 +835,7 @@
     }));
 
     const dataHoraLocal = new Date().toLocaleString('pt-BR');
-    const codigoFormulario = gerarCodigoFormulario(tipo, dataHoraLocal, maquinaSelecionada.nome);
+    const codigoFormulario = gerarCodigoFormulario(tipo, maquinaSelecionada.nome);
 
     const registro = {
       maquinaId: maquinaSelecionada.id, maquinaNome: maquinaSelecionada.nome,
@@ -892,8 +892,8 @@
     doc.text(`Gerado em ${new Date().toLocaleString('pt-BR')}`, 14, 23);
     let y = 40;
     doc.setTextColor(30, 30, 30); doc.setFontSize(10);
-    [['Código', d.codigoFormulario || '-'], ['Máquina', d.maquinaNome], ['Setor', d.maquinaSetor || '-'], ['Técnico', d.tecnicoNome],
-     ['Tipo', d.tipoManutencao], ['Data/Hora', d.dataHoraLocal], ['Obs. iniciais', d.obsInicial || '-']
+    [['Máquina', d.maquinaNome], ['Setor', d.maquinaSetor || '-'], ['Técnico', d.tecnicoNome],
+     ['Tipo', d.tipoManutencao], ['Data/Hora', d.dataHoraLocal], ['Obs. iniciais', d.obsInicial || '-'], ['Código', d.codigoFormulario || '-']
     ].forEach(([k, v]) => {
       doc.setFont('helvetica', 'bold'); doc.text(k + ':', 14, y);
       doc.setFont('helvetica', 'normal'); doc.text(String(v), 55, y); y += 7;
@@ -927,7 +927,9 @@
   }
 
   function baixarPDF() {
-    const doc = gerarDocPDF(dadosSalvos);
+    // Garantir que codigoFormulario está presente
+    const dadosCompletos = Object.assign({}, dadosSalvos, { codigoFormulario: dadosSalvos.codigoFormulario || '-' });
+    const doc = gerarDocPDF(dadosCompletos);
     const nomeArq = `manutencao_${dadosSalvos.maquinaNome.replace(/\s/g,'_')}_${new Date().toLocaleDateString('pt-BR').replace(/\//g,'-')}.pdf`;
     doc.save(nomeArq);
   }
