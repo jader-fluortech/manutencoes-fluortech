@@ -7,16 +7,17 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     :root {
-      --cor-destaque: #111D5C;        /* azul escuro Fluortech — botões principais, bordas ativas, títulos */
-      --cor-destaque-hover: #1E2F8A;  /* azul médio — botão principal ao passar o mouse */
-      --cor-fundo-tela: #FFFFFF;      /* branco — fundo geral da página */
-      --cor-fundo-card: #F4F6FB;      /* azul muito claro — fundo dos cards e painéis */
-      --cor-fundo-interno: #EEF1F8;   /* azul suave — fundo de campos e elementos internos */
-      --cor-borda: #C5CBDF;           /* azul acinzentado — bordas dos cards e inputs */
-      --cor-texto: #1A1A2E;           /* azul quase preto — texto principal */
-      --cor-ok: #2E7D32;              /* verde escuro — itens aprovados (OK) */
-      --cor-nok: #C62828;             /* vermelho escuro — itens reprovados (NOK) */
-      --cor-link: #1565C0;            /* azul — links e elementos secundários */
+      --cor-destaque: #111D5C;
+      --cor-destaque-hover: #1E2F8A;
+      --cor-fundo-tela: #FFFFFF;
+      --cor-fundo-card: #F4F6FB;
+      --cor-fundo-interno: #EEF1F8;
+      --cor-borda: #C5CBDF;
+      --cor-texto: #1A1A2E;
+      --cor-ok: #2E7D32;
+      --cor-nok: #C62828;
+      --cor-link: #1565C0;
+      --cor-alerta: #E65100;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', Arial, sans-serif; background-color: var(--cor-fundo-tela); color: var(--cor-texto); min-height: 100vh; }
@@ -32,7 +33,6 @@
 
     .container { max-width: 640px; margin: 0 auto; padding: 24px 16px; }
     .container-wide { max-width: 1100px; margin: 0 auto; padding: 24px 16px; }
-
     .tela { display: none; }
     .tela.ativa { display: block; }
 
@@ -40,13 +40,12 @@
     .login-wrapper { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
     .login-box { background: var(--cor-fundo-card); border: 1px solid var(--cor-borda); border-radius: 16px; padding: 36px 32px; width: 100%; max-width: 380px; }
     .login-logo { text-align: center; margin-bottom: 28px; }
-    .login-logo .icone { font-size: 48px; display: block; margin-bottom: 8px; }
     .login-logo h2 { font-size: 1.3rem; color: var(--cor-destaque); }
     .login-logo p { font-size: 0.82rem; color: #6670A0; margin-top: 4px; }
     .perfil-opcoes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
     .perfil-btn { background: var(--cor-fundo-interno); border: 2px solid var(--cor-borda); border-radius: 10px; padding: 16px 10px; cursor: pointer; text-align: center; transition: all 0.2s; }
     .perfil-btn:hover { border-color: var(--cor-destaque); }
-    .perfil-btn.selecionado { border-color: var(--cor-destaque); background: rgba(245,166,35,0.1); }
+    .perfil-btn.selecionado { border-color: var(--cor-destaque); background: rgba(17,29,92,0.08); }
     .perfil-btn .perfil-icone { font-size: 28px; display: block; margin-bottom: 6px; }
     .perfil-btn .perfil-label { font-size: 0.88rem; font-weight: 600; color: var(--cor-texto); }
     .perfil-btn .perfil-desc { font-size: 0.72rem; color: #444; margin-top: 3px; }
@@ -76,14 +75,12 @@
     .lista-maquinas::-webkit-scrollbar-thumb { background: var(--cor-borda); border-radius: 4px; }
     .card-maquina { background: var(--cor-fundo-card); border: 1px solid var(--cor-borda); border-radius: 10px; padding: 14px 16px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 14px; }
     .card-maquina:hover { border-color: var(--cor-destaque); background: var(--cor-fundo-interno); }
-
     .card-maquina .info h3 { font-size: 0.95rem; font-weight: 600; }
     .card-maquina .info p { font-size: 0.78rem; color: #999; margin-top: 2px; }
     .card-maquina .seta { margin-left: auto; color: var(--cor-destaque); font-size: 20px; }
 
     /* ===== MAQUINA HEADER ===== */
     .maquina-header { background: var(--cor-fundo-card); border: 1px solid var(--cor-borda); border-radius: 10px; padding: 14px 16px; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
-
     .maquina-header h2 { font-size: 1rem; font-weight: 700; }
     .maquina-header p { font-size: 0.78rem; color: #999; }
 
@@ -144,11 +141,9 @@
     .stat-card { background: var(--cor-fundo-card); border: 1px solid var(--cor-borda); border-radius: 10px; padding: 16px; text-align: center; }
     .stat-numero { font-size: 2rem; font-weight: 700; color: var(--cor-destaque); }
     .stat-label { font-size: 0.78rem; color: #444; margin-top: 4px; }
-
     .filtros-painel { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
     .filtros-painel input, .filtros-painel select { flex: 1; min-width: 140px; padding: 10px 12px; background: var(--cor-fundo-card); border: 1px solid var(--cor-borda); border-radius: 8px; color: var(--cor-texto); font-size: 0.88rem; }
     .filtros-painel input:focus, .filtros-painel select:focus { outline: none; border-color: var(--cor-destaque); }
-
     .tabela-wrapper { overflow-x: auto; }
     .tabela-manutencoes { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
     .tabela-manutencoes thead tr { background: var(--cor-fundo-interno); }
@@ -162,7 +157,7 @@
     .btn-mini:hover { border-color: var(--cor-destaque); color: var(--cor-destaque); }
     .sem-registros { text-align: center; padding: 40px; color: #444; }
 
-    /* ===== MODAL DETALHE ===== */
+    /* ===== MODAL ===== */
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 100; display: none; align-items: center; justify-content: center; padding: 16px; }
     .modal-overlay.ativo { display: flex; }
     .modal-box { background: var(--cor-fundo-card); border: 1px solid var(--cor-borda); border-radius: 14px; width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto; }
@@ -183,15 +178,39 @@
     .modal-assinatura img { background: #fff; border-radius: 6px; max-width: 200px; }
     .modal-footer { padding: 16px 20px; border-top: 1px solid var(--cor-fundo-interno); display: flex; gap: 10px; }
 
-    /* ===== TOAST ===== */
-    .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px); background: var(--cor-fundo-interno); border: 1px solid var(--cor-borda); color: var(--cor-texto); padding: 12px 20px; border-radius: 8px; font-size: 0.88rem; transition: transform 0.3s ease; z-index: 999; white-space: nowrap; }
-    .toast.visivel { transform: translateX(-50%) translateY(0); }
-
-    /* ===== LOADING ===== */
-    .loading { display: none; text-align: center; padding: 40px; color: #444; }
-    .loading.ativo { display: block; }
-    .spinner { width: 36px; height: 36px; border: 3px solid #C5CBDF; border-top-color: var(--cor-destaque); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px; }
-    @keyframes spin { to { transform: rotate(360deg); } }
+    /* ===== CALENDÁRIO ===== */
+    .calendario-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+    .calendario-header h2 { font-size: 1.2rem; color: var(--cor-destaque); }
+    .calendario-legenda { display: flex; gap: 16px; flex-wrap: wrap; font-size: 0.78rem; }
+    .legenda-item { display: flex; align-items: center; gap: 6px; }
+    .legenda-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .legenda-dot.ok { background: var(--cor-ok); }
+    .legenda-dot.proximo { background: #F9A825; }
+    .legenda-dot.atrasado { background: var(--cor-nok); }
+    .calendario-filtros { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+    .calendario-filtros select, .calendario-filtros input { flex: 1; min-width: 140px; padding: 9px 12px; background: var(--cor-fundo-card); border: 1px solid var(--cor-borda); border-radius: 8px; color: var(--cor-texto); font-size: 0.88rem; }
+    .calendario-filtros select:focus, .calendario-filtros input:focus { outline: none; border-color: var(--cor-destaque); }
+    .calendario-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+    .cal-stat { background: var(--cor-fundo-card); border: 1px solid var(--cor-borda); border-radius: 10px; padding: 14px; text-align: center; }
+    .cal-stat-num { font-size: 1.8rem; font-weight: 700; }
+    .cal-stat-num.ok { color: var(--cor-ok); }
+    .cal-stat-num.proximo { color: #F9A825; }
+    .cal-stat-num.atrasado { color: var(--cor-nok); }
+    .cal-stat-label { font-size: 0.75rem; color: #666; margin-top: 3px; }
+    .tabela-calendario { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    .tabela-calendario thead tr { background: var(--cor-fundo-interno); }
+    .tabela-calendario th { padding: 10px 14px; text-align: left; color: var(--cor-destaque); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; }
+    .tabela-calendario td { padding: 11px 14px; border-bottom: 1px solid var(--cor-fundo-interno); vertical-align: middle; }
+    .tabela-calendario tbody tr:hover { background: var(--cor-fundo-interno); }
+    .status-badge { display: inline-flex; align-items: center; gap: 5px; border-radius: 20px; padding: 3px 10px; font-size: 0.75rem; font-weight: 600; white-space: nowrap; }
+    .status-badge.ok { background: rgba(46,125,50,0.1); color: var(--cor-ok); }
+    .status-badge.proximo { background: rgba(249,168,37,0.15); color: #E65100; }
+    .status-badge.atrasado { background: rgba(198,40,40,0.12); color: var(--cor-nok); border: 1px solid rgba(198,40,40,0.3); }
+    .row-atrasado { background: rgba(198,40,40,0.04) !important; }
+    .row-atrasado td { color: var(--cor-nok) !important; font-weight: 500; }
+    .row-atrasado td strong { color: var(--cor-nok) !important; }
+    .btn-editar-data { background: var(--cor-fundo-interno); border: 1px solid var(--cor-borda); color: var(--cor-destaque); border-radius: 6px; padding: 4px 10px; font-size: 0.75rem; cursor: pointer; }
+    .btn-editar-data:hover { background: var(--cor-destaque); color: #fff; }
 
     /* ===== ADMIN ===== */
     .admin-link { text-align: center; margin-top: 16px; }
@@ -215,15 +234,26 @@
     .checklist-item-admin button { background: rgba(198,40,40,0.1); border: 1px solid rgba(198,40,40,0.3); color: var(--cor-nok); border-radius: 6px; padding: 5px 8px; cursor: pointer; font-size: 0.8rem; flex-shrink: 0; }
     .btn-add-item { background: var(--cor-fundo-interno); border: 1px dashed var(--cor-borda); color: #666; border-radius: 6px; padding: 8px; width: 100%; cursor: pointer; font-size: 0.82rem; margin-top: 4px; }
     .btn-add-item:hover { border-color: var(--cor-destaque); color: var(--cor-destaque); }
-    .admin-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
-    .admin-tab { flex: 1; padding: 10px; background: var(--cor-fundo-interno); border: 1px solid var(--cor-borda); border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 600; color: #666; text-align: center; }
+    .admin-tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+    .admin-tab { flex: 1; padding: 10px; background: var(--cor-fundo-interno); border: 1px solid var(--cor-borda); border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 600; color: #666; text-align: center; min-width: 100px; }
     .admin-tab.ativa { background: var(--cor-destaque); color: #fff; border-color: var(--cor-destaque); }
+
+    /* ===== TOAST ===== */
+    .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px); background: var(--cor-fundo-interno); border: 1px solid var(--cor-borda); color: var(--cor-texto); padding: 12px 20px; border-radius: 8px; font-size: 0.88rem; transition: transform 0.3s ease; z-index: 999; white-space: nowrap; }
+    .toast.visivel { transform: translateX(-50%) translateY(0); }
+
+    /* ===== LOADING ===== */
+    .loading { display: none; text-align: center; padding: 40px; color: #444; }
+    .loading.ativo { display: block; }
+    .spinner { width: 36px; height: 36px; border: 3px solid #C5CBDF; border-top-color: var(--cor-destaque); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
     @media (max-width: 480px) {
       header h1 { font-size: 1rem; }
       .container, .container-wide { padding: 16px 12px; }
       .modal-info-grid { grid-template-columns: 1fr; }
       .painel-stats { grid-template-columns: 1fr 1fr; }
+      .calendario-stats { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -252,7 +282,6 @@
         <h2>Sistema de Manutenções</h2>
         <p>Selecione seu perfil e insira a senha</p>
       </div>
-
       <div class="perfil-opcoes">
         <div class="perfil-btn" id="btn-tecnico" onclick="selecionarPerfil('tecnico')">
           <span class="perfil-icone">🔧</span>
@@ -265,7 +294,6 @@
           <div class="perfil-desc">Ver painel</div>
         </div>
       </div>
-
       <div class="form-grupo">
         <label>Senha</label>
         <input type="password" id="input-senha" placeholder="Digite a senha" onkeydown="if(event.key==='Enter') entrar()" />
@@ -291,17 +319,47 @@
   </div>
 </div>
 
+<!-- ===== MODAL EDITAR DATA CALENDÁRIO ===== -->
+<div class="modal-overlay" id="modal-editar-data">
+  <div class="modal-box" style="max-width:400px">
+    <div class="modal-header">
+      <h3>📅 Editar Data de Manutenção</h3>
+      <button class="modal-fechar" onclick="fecharModalData()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="editar-data-maquina" style="font-weight:700;font-size:1rem;color:var(--cor-destaque);margin-bottom:16px"></div>
+      <div class="form-grupo">
+        <label>Próxima Manutenção Preventiva</label>
+        <input type="date" id="input-nova-data" />
+      </div>
+      <div class="form-grupo">
+        <label>Intervalo (meses)</label>
+        <select id="input-intervalo">
+          <option value="3">3 meses</option>
+          <option value="6" selected>6 meses</option>
+          <option value="12">12 meses</option>
+          <option value="24">24 meses</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primario" onclick="salvarDataCalendario()" style="flex:1">💾 Salvar</button>
+      <button class="btn btn-secundario" onclick="fecharModalData()" style="width:auto;padding:14px 20px">Cancelar</button>
+    </div>
+  </div>
+</div>
+
 <!-- ===== TELA ADMIN ===== -->
 <div id="tela-admin" class="tela">
   <div class="container">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
-      <h2 style="font-size:1.1rem;color:var(--cor-destaque)">⚙️ Administração de Máquinas</h2>
+      <h2 style="font-size:1.1rem;color:var(--cor-destaque)">⚙️ Administração</h2>
       <button class="btn-sair" onclick="sairAdmin()">Sair</button>
     </div>
-
     <div class="admin-tabs">
       <div class="admin-tab ativa" id="tab-lista" onclick="mostrarTabAdmin('lista')">📋 Máquinas</div>
-      <div class="admin-tab" id="tab-nova" onclick="mostrarTabAdmin('nova')">➕ Nova Máquina</div>
+      <div class="admin-tab" id="tab-nova" onclick="mostrarTabAdmin('nova')">➕ Nova</div>
+      <div class="admin-tab" id="tab-calendario-admin" onclick="mostrarTabAdmin('calendario')">📅 Calendário</div>
     </div>
 
     <!-- Lista de máquinas -->
@@ -325,7 +383,7 @@
       </div>
       <div class="form-grupo">
         <label>Nome da Máquina</label>
-        <input type="text" id="admin-nome" placeholder="Ex: E016" />
+        <input type="text" id="admin-nome" placeholder="Ex: E016 - Torno CNC" />
       </div>
       <div class="form-grupo">
         <label>Setor</label>
@@ -348,6 +406,30 @@
       </div>
       <button class="btn btn-primario" onclick="salvarMaquinaAdmin()" style="margin-bottom:10px" id="btn-salvar-admin">💾 Salvar Máquina</button>
       <button class="btn btn-secundario" onclick="cancelarFormAdmin()">Cancelar</button>
+    </div>
+
+    <!-- Calendário admin -->
+    <div id="admin-calendario" style="display:none">
+      <p style="font-size:0.85rem;color:#666;margin-bottom:16px;background:var(--cor-fundo-interno);padding:10px 14px;border-radius:8px;">
+        📅 Clique em <strong>Editar</strong> para alterar a data e intervalo de manutenção preventiva de cada máquina.
+      </p>
+      <div class="busca-wrapper" style="margin-bottom:12px">
+        <span class="icone-busca">🔍</span>
+        <input type="text" id="busca-cal-admin" placeholder="Buscar máquina..." oninput="filtrarCalendarioAdmin(this.value)" />
+      </div>
+      <div class="tabela-wrapper">
+        <table class="tabela-calendario">
+          <thead><tr>
+            <th>Máquina</th>
+            <th>Setor</th>
+            <th>Próxima Manutenção</th>
+            <th>Intervalo</th>
+            <th>Última Preventiva</th>
+            <th>Ação</th>
+          </tr></thead>
+          <tbody id="tabela-cal-admin"></tbody>
+        </table>
+      </div>
     </div>
   </div>
 </div>
@@ -436,74 +518,104 @@
 <!-- ===== TELA PAINEL GESTOR ===== -->
 <div id="tela-painel" class="tela">
   <div class="container-wide">
-    <h2 style="font-size:1.2rem;margin-bottom:20px;color:var(--cor-destaque)">📊 Painel do Gestor</h2>
-
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px">
+      <h2 style="font-size:1.2rem;color:var(--cor-destaque)">📊 Painel do Gestor</h2>
+      <button class="btn-mini" onclick="irPara('tela-calendario')" style="padding:8px 16px;font-size:0.85rem">📅 Ver Calendário</button>
+    </div>
     <div class="painel-stats" id="painel-stats">
       <div class="stat-card"><div class="stat-numero" id="stat-total">—</div><div class="stat-label" id="label-total">Total de Manutenções</div></div>
       <div class="stat-card"><div class="stat-numero" id="stat-mes">—</div><div class="stat-label" id="label-mes">No Mês</div></div>
       <div class="stat-card"><div class="stat-numero" id="stat-nok" style="color:var(--cor-nok)">—</div><div class="stat-label" id="label-nok">Com Itens NOK</div></div>
       <div class="stat-card"><div class="stat-numero" id="stat-maquinas">—</div><div class="stat-label" id="label-maquinas">Máquinas Atendidas</div></div>
     </div>
-
     <div class="filtros-painel">
       <input type="text" id="filtro-busca" placeholder="🔍 Buscar por máquina ou técnico..." oninput="filtrarPainel()" />
       <select id="filtro-mes" onchange="filtrarPainel()">
         <option value="">Todos os meses</option>
-        <option value="01">Janeiro</option>
-        <option value="02">Fevereiro</option>
-        <option value="03">Março</option>
-        <option value="04">Abril</option>
-        <option value="05">Maio</option>
-        <option value="06">Junho</option>
-        <option value="07">Julho</option>
-        <option value="08">Agosto</option>
-        <option value="09">Setembro</option>
-        <option value="10">Outubro</option>
-        <option value="11">Novembro</option>
-        <option value="12">Dezembro</option>
+        <option value="01">Janeiro</option><option value="02">Fevereiro</option><option value="03">Março</option>
+        <option value="04">Abril</option><option value="05">Maio</option><option value="06">Junho</option>
+        <option value="07">Julho</option><option value="08">Agosto</option><option value="09">Setembro</option>
+        <option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option>
       </select>
       <select id="filtro-ano" onchange="filtrarPainel()">
         <option value="">Todos os anos</option>
-        <option value="2025">2025</option>
-        <option value="2026">2026</option>
-        <option value="2027">2027</option>
-        <option value="2028">2028</option>
+        <option value="2025">2025</option><option value="2026">2026</option>
+        <option value="2027">2027</option><option value="2028">2028</option>
       </select>
       <select id="filtro-tipo" onchange="filtrarPainel()">
         <option value="">Todos os tipos</option>
-        <option value="Preventiva">Preventiva</option>
-        <option value="Corretiva">Corretiva</option>
-        <option value="Preditiva">Preditiva</option>
-        <option value="Inspeção">Inspeção</option>
+        <option value="Preventiva">Preventiva</option><option value="Corretiva">Corretiva</option>
+        <option value="Preditiva">Preditiva</option><option value="Inspeção">Inspeção</option>
       </select>
       <select id="filtro-setor" onchange="filtrarPainel()">
         <option value="">Todos os setores</option>
-        <option value="Moldagem">Moldagem</option>
-        <option value="Sinterização">Sinterização</option>
-        <option value="Usinagem">Usinagem</option>
-        <option value="Tamboreamento">Tamboreamento</option>
+        <option value="Moldagem">Moldagem</option><option value="Sinterização">Sinterização</option>
+        <option value="Usinagem">Usinagem</option><option value="Tamboreamento">Tamboreamento</option>
       </select>
     </div>
-
     <div style="display:flex;justify-content:flex-end;margin-bottom:12px">
       <button class="btn-mini" onclick="exportarExcel()" style="padding:8px 16px;font-size:0.88rem;background:var(--cor-destaque);color:#fff;border:none;border-radius:8px;cursor:pointer">📊 Exportar Excel</button>
     </div>
     <div class="tabela-wrapper">
       <table class="tabela-manutencoes">
-        <thead>
-          <tr>
-            <th>Código</th>
-            <th>Data/Hora</th>
-            <th>Máquina</th>
-            <th>Setor</th>
-            <th>Técnico</th>
-            <th>Tipo</th>
-            <th>Resultado</th>
-            <th>Ações</th>
-          </tr>
-        </thead>
+        <thead><tr>
+          <th>Código</th><th>Data/Hora</th><th>Máquina</th><th>Setor</th>
+          <th>Técnico</th><th>Tipo</th><th>Resultado</th><th>Ações</th>
+        </tr></thead>
         <tbody id="tabela-body">
-          <tr><td colspan="7"><div class="loading ativo"><div class="spinner"></div>Carregando registros...</div></td></tr>
+          <tr><td colspan="8"><div class="loading ativo"><div class="spinner"></div>Carregando registros...</div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TELA CALENDÁRIO ===== -->
+<div id="tela-calendario" class="tela">
+  <div class="container-wide">
+    <div class="calendario-header">
+      <div>
+        <button class="btn-voltar" onclick="voltarDoCalendario()" style="padding:0;margin-bottom:8px">← Voltar</button>
+        <h2>📅 Calendário de Manutenções Preventivas</h2>
+      </div>
+      <div class="calendario-legenda">
+        <div class="legenda-item"><div class="legenda-dot ok"></div><span>Em dia</span></div>
+        <div class="legenda-item"><div class="legenda-dot proximo"></div><span>Próximos 10 dias</span></div>
+        <div class="legenda-item"><div class="legenda-dot atrasado"></div><span>Atrasado</span></div>
+      </div>
+    </div>
+
+    <div class="calendario-stats">
+      <div class="cal-stat"><div class="cal-stat-num ok" id="cal-stat-ok">—</div><div class="cal-stat-label">Em dia</div></div>
+      <div class="cal-stat"><div class="cal-stat-num proximo" id="cal-stat-proximo">—</div><div class="cal-stat-label">Próximos 10 dias</div></div>
+      <div class="cal-stat"><div class="cal-stat-num atrasado" id="cal-stat-atrasado">—</div><div class="cal-stat-label">Atrasados</div></div>
+    </div>
+
+    <div class="calendario-filtros">
+      <input type="text" id="filtro-cal-busca" placeholder="🔍 Buscar máquina..." oninput="filtrarCalendario()" />
+      <select id="filtro-cal-setor" onchange="filtrarCalendario()">
+        <option value="">Todos os setores</option>
+        <option value="Moldagem">Moldagem</option><option value="Sinterização">Sinterização</option>
+        <option value="Usinagem">Usinagem</option><option value="Tamboreamento">Tamboreamento</option>
+        <option value="Acabamento">Acabamento</option><option value="Inspeção">Inspeção</option>
+        <option value="Externo">Externo</option><option value="N/A">N/A</option>
+      </select>
+      <select id="filtro-cal-status" onchange="filtrarCalendario()">
+        <option value="">Todos os status</option>
+        <option value="atrasado">Atrasados</option>
+        <option value="proximo">Próximos 10 dias</option>
+        <option value="ok">Em dia</option>
+      </select>
+    </div>
+
+    <div class="tabela-wrapper">
+      <table class="tabela-calendario">
+        <thead><tr>
+          <th>Máquina</th><th>Setor</th><th>Próxima Manutenção</th>
+          <th>Dias Restantes</th><th>Última Preventiva</th><th>Status</th>
+        </tr></thead>
+        <tbody id="tabela-calendario-body">
+          <tr><td colspan="6"><div class="loading ativo"><div class="spinner"></div>Carregando calendário...</div></td></tr>
         </tbody>
       </table>
     </div>
@@ -530,7 +642,7 @@
 <!-- ===== FIREBASE ===== -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getFirestore, collection, getDocs, addDoc, serverTimestamp, orderBy, query, doc, deleteDoc, setDoc }
+  import { getFirestore, collection, getDocs, addDoc, serverTimestamp, orderBy, query, doc, deleteDoc, setDoc, getDoc, updateDoc }
     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
   const firebaseConfig = {
@@ -555,12 +667,12 @@
   window._doc = doc;
   window._deleteDoc = deleteDoc;
   window._setDoc = setDoc;
+  window._getDoc = getDoc;
+  window._updateDoc = updateDoc;
 
-  // Restaurar sessão ao recarregar a página
   const flLogado = sessionStorage.getItem('fl_logado');
   const flPerfil = sessionStorage.getItem('fl_perfil');
   const flTela = sessionStorage.getItem('fl_tela');
-
   if (flLogado && flPerfil) {
     window._perfilSessao = flPerfil;
     window._telaSessao = flTela;
@@ -569,29 +681,30 @@
 </script>
 
 <script>
-  // ===== CONFIGURAÇÕES =====
   const SENHA_TECNICO = '1234';
   const SENHA_GESTOR = '12345';
+  const SENHA_ADMIN = '123456';
   const BREVO_API_KEY = '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';
   const EMAILS_DESTINO = [
     'jaderfilho@fluortech.com.br'
-    // Adicione mais emails aqui:
-    // 'outro@fluortech.com.br',
   ];
 
-  // ===== ESTADO =====
   let perfilSelecionado = null;
   let maquinaSelecionada = null;
   let respostas = {};
   let assinaturaCanvas, assinaturaCtx, desenhando = false;
   let dadosSalvos = null;
+  let todasMaquinas = [];
+  let todosRegistros = [];
+  let registroModal = null;
+  let dadosCalendario = [];
+  let maquinaEditandoData = null;
+  let telaAnteriorCalendario = 'tela-painel';
 
-  // Restaurar sessão se existir
   window.addEventListener('load', async () => {
     if (window._restaurarSessao && window._perfilSessao) {
       perfilSelecionado = window._perfilSessao;
       document.getElementById('header-right').style.display = 'flex';
-
       if (perfilSelecionado === 'admin') {
         document.getElementById('badge-perfil').textContent = '🔐 Admin';
         await carregarMaquinasAdmin();
@@ -607,9 +720,6 @@
       }
     }
   });
-  let todasMaquinas = [];
-  let todosRegistros = [];
-  let registroModal = null;
 
   // ===== LOGIN =====
   function selecionarPerfil(perfil) {
@@ -622,31 +732,20 @@
   function entrar() {
     const erro = document.getElementById('erro-login');
     erro.classList.remove('visivel');
-
     if (!perfilSelecionado) { mostrarToast('Selecione Técnico ou Gestor.'); return; }
     const senha = document.getElementById('input-senha').value;
     const senhaCorreta = perfilSelecionado === 'tecnico' ? SENHA_TECNICO : SENHA_GESTOR;
     if (senha !== senhaCorreta) { erro.classList.add('visivel'); return; }
-
     document.getElementById('header-right').style.display = 'flex';
     document.getElementById('badge-perfil').textContent = perfilSelecionado === 'tecnico' ? '🔧 Técnico' : '📊 Gestor';
     sessionStorage.setItem('fl_perfil', perfilSelecionado);
     sessionStorage.setItem('fl_logado', '1');
-
-    if (perfilSelecionado === 'tecnico') {
-      carregarMaquinas();
-      irPara('tela-maquinas');
-    } else {
-      carregarPainel();
-      irPara('tela-painel');
-    }
+    if (perfilSelecionado === 'tecnico') { carregarMaquinas(); irPara('tela-maquinas'); }
+    else { carregarPainel(); irPara('tela-painel'); }
   }
 
   function sair() {
-    perfilSelecionado = null;
-    maquinaSelecionada = null;
-    respostas = {};
-    dadosSalvos = null;
+    perfilSelecionado = null; maquinaSelecionada = null; respostas = {}; dadosSalvos = null;
     sessionStorage.clear();
     document.getElementById('input-senha').value = '';
     document.getElementById('btn-tecnico').classList.remove('selecionado');
@@ -660,13 +759,10 @@
     document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa'));
     document.getElementById(telaId).classList.add('ativa');
     window.scrollTo(0, 0);
-    // Salvar estado da sessão — não sobrescrever se admin
     if (telaId !== 'tela-login') {
       sessionStorage.setItem('fl_tela', telaId);
       const perfilAtual = sessionStorage.getItem('fl_perfil');
-      if (perfilAtual !== 'admin') {
-        sessionStorage.setItem('fl_perfil', perfilSelecionado || '');
-      }
+      if (perfilAtual !== 'admin') sessionStorage.setItem('fl_perfil', perfilSelecionado || '');
     }
   }
 
@@ -675,10 +771,7 @@
     try {
       const snap = await window._getDocs(window._collection(window._db, 'maquinas'));
       todasMaquinas = [];
-      snap.forEach(doc => {
-        const data = doc.data();
-        if (data.nome) todasMaquinas.push({ id: doc.id, ...data });
-      });
+      snap.forEach(d => { const data = d.data(); if (data.nome) todasMaquinas.push({ id: d.id, ...data }); });
       todasMaquinas.sort((a, b) => a.nome.localeCompare(b.nome));
       renderizarMaquinas(todasMaquinas);
     } catch (e) {
@@ -693,8 +786,7 @@
       <div class="card-maquina" onclick="selecionarMaquina('${m.id}')">
         <div class="info"><h3>${m.nome}</h3><p>${m.setor || ''} · ${(m.checklist || []).length} itens</p></div>
         <div class="seta">›</div>
-      </div>
-    `).join('');
+      </div>`).join('');
   }
 
   function filtrarMaquinas() {
@@ -734,20 +826,16 @@
     for (const [secao, itens] of Object.entries(secoes)) {
       html += `<div class="secao-checklist"><div class="secao-titulo">${secao}</div>`;
       itens.forEach(item => {
-        html += `
-          <div class="item-checklist" id="item-${item.index}">
-            <div class="item-topo">
-              <div class="item-numero">${item.index + 1}</div>
-              <div class="item-texto">${item.texto}</div>
-            </div>
-            <div class="item-acoes">
-              <button class="btn-ok" id="ok-${item.index}" onclick="responder(${item.index}, 'OK')">✔ OK</button>
-              <button class="btn-nok" id="nok-${item.index}" onclick="responder(${item.index}, 'NOK')">✘ NOK</button>
-            </div>
-            <div class="item-obs" id="obs-wrapper-${item.index}">
-              <input type="text" id="obs-${item.index}" placeholder="Descreva o problema encontrado..." />
-            </div>
-          </div>`;
+        html += `<div class="item-checklist" id="item-${item.index}">
+          <div class="item-topo"><div class="item-numero">${item.index + 1}</div><div class="item-texto">${item.texto}</div></div>
+          <div class="item-acoes">
+            <button class="btn-ok" id="ok-${item.index}" onclick="responder(${item.index}, 'OK')">✔ OK</button>
+            <button class="btn-nok" id="nok-${item.index}" onclick="responder(${item.index}, 'NOK')">✘ NOK</button>
+          </div>
+          <div class="item-obs" id="obs-wrapper-${item.index}">
+            <input type="text" id="obs-${item.index}" placeholder="Descreva o problema encontrado..." />
+          </div>
+        </div>`;
       });
       html += '</div>';
     }
@@ -764,20 +852,16 @@
     itemEl.classList.remove('ok', 'nok');
     okBtn.classList.remove('selecionado');
     nokBtn.classList.remove('selecionado');
-    if (valor === 'OK') {
-      itemEl.classList.add('ok'); okBtn.classList.add('selecionado'); obsWrapper.classList.remove('visivel');
-    } else {
-      itemEl.classList.add('nok'); nokBtn.classList.add('selecionado'); obsWrapper.classList.add('visivel');
-    }
+    if (valor === 'OK') { itemEl.classList.add('ok'); okBtn.classList.add('selecionado'); obsWrapper.classList.remove('visivel'); }
+    else { itemEl.classList.add('nok'); nokBtn.classList.add('selecionado'); obsWrapper.classList.add('visivel'); }
     atualizarProgresso();
   }
 
   function atualizarProgresso() {
     const total = maquinaSelecionada.checklist.length;
     const feitos = Object.keys(respostas).length;
-    const pct = total > 0 ? (feitos / total) * 100 : 0;
     document.getElementById('progresso-texto').textContent = `${feitos} / ${total} itens`;
-    document.getElementById('barra-fill').style.width = pct + '%';
+    document.getElementById('barra-fill').style.width = (total > 0 ? (feitos / total) * 100 : 0) + '%';
   }
 
   // ===== ASSINATURA =====
@@ -802,20 +886,208 @@
 
   // ===== CÓDIGO DO FORMULÁRIO =====
   function gerarCodigoFormulario(tipo, maquinaNome) {
-    const prefixos = {
-      'Preditiva': 'PD',
-      'Preventiva': 'PV',
-      'Inspeção': 'I',
-      'Corretiva': 'C'
-    };
+    const prefixos = { 'Preditiva': 'PD', 'Preventiva': 'PV', 'Inspeção': 'I', 'Corretiva': 'C' };
     const prefixo = prefixos[tipo] || 'M';
-    // Usar Date diretamente para evitar problemas de formato
     const agora = new Date();
     const mes = String(agora.getMonth() + 1).padStart(2, '0');
     const ano = String(agora.getFullYear()).slice(-2);
-    // Extrair código da máquina (tudo antes do traço)
     const codigoMaquina = maquinaNome.split(' - ')[0].trim().replace(/\s/g, '');
     return `${prefixo}${mes}${ano}${codigoMaquina}`;
+  }
+
+  // ===== CALENDÁRIO — UTILITÁRIOS =====
+  function calcularProximaData(dataAtual, intervaloMeses) {
+    const d = new Date(dataAtual + 'T00:00:00');
+    d.setMonth(d.getMonth() + intervaloMeses);
+    return d.toISOString().split('T')[0];
+  }
+
+  function calcularStatus(proximaData) {
+    const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
+    const proxima = new Date(proximaData + 'T00:00:00');
+    const diffMs = proxima - hoje;
+    const diffDias = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+    if (diffDias < 0) return { status: 'atrasado', dias: diffDias };
+    if (diffDias <= 10) return { status: 'proximo', dias: diffDias };
+    return { status: 'ok', dias: diffDias };
+  }
+
+  function formatarDataBR(dataISO) {
+    if (!dataISO) return '-';
+    const [ano, mes, dia] = dataISO.split('-');
+    return `${dia}/${mes}/${ano}`;
+  }
+
+  // ===== CALENDÁRIO — INICIALIZAR MÁQUINAS =====
+  async function inicializarCalendarioMaquinas() {
+    // Pega todas as máquinas e garante que todas tenham entrada no calendário
+    const snapMaq = await window._getDocs(window._collection(window._db, 'maquinas'));
+    const maquinas = [];
+    snapMaq.forEach(d => { if (d.data().nome) maquinas.push({ id: d.id, ...d.data() }); });
+
+    for (const m of maquinas) {
+      const docRef = window._doc(window._db, 'calendario', m.id);
+      const docSnap = await window._getDoc(docRef);
+      if (!docSnap.exists()) {
+        await window._setDoc(docRef, {
+          maquinaId: m.id,
+          maquinaNome: m.nome,
+          maquinaSetor: m.setor || '',
+          proximaManutencao: '2026-10-10',
+          ultimaManutencao: null,
+          intervaloMeses: 6
+        });
+      }
+    }
+  }
+
+  // ===== CALENDÁRIO — ATUALIZAR APÓS PREVENTIVA =====
+  async function atualizarCalendarioAposPreventiva(maquinaId, maquinaNome, maquinaSetor, dataHoraLocal) {
+    try {
+      const docRef = window._doc(window._db, 'calendario', maquinaId);
+      const docSnap = await window._getDoc(docRef);
+      const intervalo = docSnap.exists() ? (docSnap.data().intervaloMeses || 6) : 6;
+      const hoje = new Date().toISOString().split('T')[0];
+      const proximaData = calcularProximaData(hoje, intervalo);
+      await window._setDoc(docRef, {
+        maquinaId, maquinaNome, maquinaSetor,
+        proximaManutencao: proximaData,
+        ultimaManutencao: hoje,
+        intervaloMeses: intervalo
+      });
+    } catch (e) {
+      console.error('Erro ao atualizar calendário:', e);
+    }
+  }
+
+  // ===== CALENDÁRIO — CARREGAR =====
+  async function carregarCalendario() {
+    try {
+      const snap = await window._getDocs(window._collection(window._db, 'calendario'));
+      dadosCalendario = [];
+      snap.forEach(d => dadosCalendario.push({ id: d.id, ...d.data() }));
+      dadosCalendario.sort((a, b) => (a.proximaManutencao || '').localeCompare(b.proximaManutencao || ''));
+      renderizarCalendario(dadosCalendario);
+      atualizarStatsCalendario(dadosCalendario);
+    } catch (e) {
+      document.getElementById('tabela-calendario-body').innerHTML = '<tr><td colspan="6" style="padding:20px;color:#e57373;text-align:center">Erro ao carregar calendário.</td></tr>';
+    }
+  }
+
+  function atualizarStatsCalendario(lista) {
+    const ok = lista.filter(r => calcularStatus(r.proximaManutencao).status === 'ok').length;
+    const proximo = lista.filter(r => calcularStatus(r.proximaManutencao).status === 'proximo').length;
+    const atrasado = lista.filter(r => calcularStatus(r.proximaManutencao).status === 'atrasado').length;
+    document.getElementById('cal-stat-ok').textContent = ok;
+    document.getElementById('cal-stat-proximo').textContent = proximo;
+    document.getElementById('cal-stat-atrasado').textContent = atrasado;
+  }
+
+  function renderizarCalendario(lista) {
+    const tbody = document.getElementById('tabela-calendario-body');
+    const isAdmin = perfilSelecionado === 'admin';
+    if (lista.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6"><div class="sem-registros">📭 Nenhum registro encontrado.</div></td></tr>';
+      return;
+    }
+    tbody.innerHTML = lista.map(r => {
+      const { status, dias } = calcularStatus(r.proximaManutencao);
+      const isAtrasado = status === 'atrasado';
+      const statusLabels = { ok: '✔ Em dia', proximo: '⚠ Próximo', atrasado: '✘ Atrasado' };
+      const diasTexto = isAtrasado
+        ? `${Math.abs(dias)} dias atraso`
+        : dias === 0 ? 'Hoje!' : `${dias} dias`;
+      return `<tr class="${isAtrasado ? 'row-atrasado' : ''}">
+        <td><strong>${r.maquinaNome || '-'}</strong></td>
+        <td>${r.maquinaSetor || '-'}</td>
+        <td>${formatarDataBR(r.proximaManutencao)}</td>
+        <td style="font-weight:600;color:${isAtrasado ? 'var(--cor-nok)' : status === 'proximo' ? '#E65100' : 'var(--cor-ok)'}">${diasTexto}</td>
+        <td>${r.ultimaManutencao ? formatarDataBR(r.ultimaManutencao) : '—'}</td>
+        <td><span class="status-badge ${status}">${statusLabels[status]}</span></td>
+      </tr>`;
+    }).join('');
+  }
+
+  function filtrarCalendario() {
+    const busca = document.getElementById('filtro-cal-busca').value.toLowerCase();
+    const setor = document.getElementById('filtro-cal-setor').value;
+    const status = document.getElementById('filtro-cal-status').value;
+    const filtrados = dadosCalendario.filter(r => {
+      const matchBusca = !busca || (r.maquinaNome || '').toLowerCase().includes(busca);
+      const matchSetor = !setor || r.maquinaSetor === setor;
+      const matchStatus = !status || calcularStatus(r.proximaManutencao).status === status;
+      return matchBusca && matchSetor && matchStatus;
+    });
+    renderizarCalendario(filtrados);
+    atualizarStatsCalendario(filtrados);
+  }
+
+  function voltarDoCalendario() {
+    irPara(telaAnteriorCalendario);
+  }
+
+  // ===== CALENDÁRIO ADMIN =====
+  async function carregarCalendarioAdmin() {
+    try {
+      const snap = await window._getDocs(window._collection(window._db, 'calendario'));
+      dadosCalendario = [];
+      snap.forEach(d => dadosCalendario.push({ id: d.id, ...d.data() }));
+      dadosCalendario.sort((a, b) => (a.maquinaNome || '').localeCompare(b.maquinaNome || ''));
+      renderizarCalendarioAdmin(dadosCalendario);
+    } catch (e) {
+      document.getElementById('tabela-cal-admin').innerHTML = '<tr><td colspan="6" style="padding:20px;color:#e57373">Erro ao carregar.</td></tr>';
+    }
+  }
+
+  function renderizarCalendarioAdmin(lista) {
+    const tbody = document.getElementById('tabela-cal-admin');
+    if (lista.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="padding:20px;text-align:center;color:#aaa">Nenhuma máquina encontrada.</td></tr>'; return; }
+    tbody.innerHTML = lista.map(r => `
+      <tr>
+        <td><strong>${r.maquinaNome || '-'}</strong></td>
+        <td>${r.maquinaSetor || '-'}</td>
+        <td>${formatarDataBR(r.proximaManutencao)}</td>
+        <td>${r.intervaloMeses || 6} meses</td>
+        <td>${r.ultimaManutencao ? formatarDataBR(r.ultimaManutencao) : '—'}</td>
+        <td><button class="btn-editar-data" onclick="abrirModalData('${r.id}')">✏️ Editar</button></td>
+      </tr>`).join('');
+  }
+
+  function filtrarCalendarioAdmin(q) {
+    const filtradas = dadosCalendario.filter(r => (r.maquinaNome || '').toLowerCase().includes(q.toLowerCase()));
+    renderizarCalendarioAdmin(filtradas);
+  }
+
+  function abrirModalData(id) {
+    maquinaEditandoData = dadosCalendario.find(r => r.id === id);
+    if (!maquinaEditandoData) return;
+    document.getElementById('editar-data-maquina').textContent = maquinaEditandoData.maquinaNome;
+    document.getElementById('input-nova-data').value = maquinaEditandoData.proximaManutencao || '';
+    document.getElementById('input-intervalo').value = maquinaEditandoData.intervaloMeses || 6;
+    document.getElementById('modal-editar-data').classList.add('ativo');
+  }
+
+  function fecharModalData() {
+    document.getElementById('modal-editar-data').classList.remove('ativo');
+    maquinaEditandoData = null;
+  }
+
+  async function salvarDataCalendario() {
+    if (!maquinaEditandoData) return;
+    const novaData = document.getElementById('input-nova-data').value;
+    const novoIntervalo = parseInt(document.getElementById('input-intervalo').value);
+    if (!novaData) { mostrarToast('Selecione uma data.'); return; }
+    try {
+      await window._updateDoc(window._doc(window._db, 'calendario', maquinaEditandoData.id), {
+        proximaManutencao: novaData,
+        intervaloMeses: novoIntervalo
+      });
+      mostrarToast('✅ Data atualizada com sucesso!');
+      fecharModalData();
+      await carregarCalendarioAdmin();
+    } catch (e) {
+      mostrarToast('Erro ao salvar data.');
+    }
   }
 
   // ===== FINALIZAR =====
@@ -837,7 +1109,6 @@
       texto: item.texto, secao: item.secao || 'Geral', resultado: respostas[i],
       observacao: document.getElementById(`obs-${i}`)?.value || ''
     }));
-
     const dataHoraLocal = new Date().toLocaleString('pt-BR');
     const codigoFormulario = gerarCodigoFormulario(tipo, maquinaSelecionada.nome);
 
@@ -852,13 +1123,18 @@
     try {
       await window._addDoc(window._collection(window._db, 'manutencoes'), registro);
       dadosSalvos = registro;
-      btn.textContent = '📧 Enviando email...';
-      try {
-        await enviarEmailComPDF();
-        mostrarToast('✅ Salvo e email enviado!');
-      } catch (e) {
-        mostrarToast('⚠️ Salvo! Falha no email.');
+
+      // Atualizar calendário se for manutenção preventiva
+      if (tipo === 'Preventiva') {
+        await atualizarCalendarioAposPreventiva(
+          maquinaSelecionada.id, maquinaSelecionada.nome,
+          maquinaSelecionada.setor || '', dataHoraLocal
+        );
       }
+
+      btn.textContent = '📧 Enviando email...';
+      try { await enviarEmailComPDF(); mostrarToast('✅ Salvo e email enviado!'); }
+      catch (e) { mostrarToast('⚠️ Salvo! Falha no email.'); }
       exibirSucesso();
       btn.disabled = false;
       btn.textContent = '✅ Finalizar e Salvar';
@@ -931,18 +1207,15 @@
   }
 
   function baixarPDF() {
-    // Garantir que codigoFormulario está presente
     const dadosCompletos = Object.assign({}, dadosSalvos, { codigoFormulario: dadosSalvos.codigoFormulario || '-' });
     const doc = gerarDocPDF(dadosCompletos);
-    const nomeArq = `manutencao_${dadosSalvos.maquinaNome.replace(/\s/g,'_')}_${new Date().toLocaleDateString('pt-BR').replace(/\//g,'-')}.pdf`;
-    doc.save(nomeArq);
+    doc.save(`manutencao_${dadosSalvos.maquinaNome.replace(/\s/g,'_')}_${new Date().toLocaleDateString('pt-BR').replace(/\//g,'-')}.pdf`);
   }
 
   function baixarPDFModal() {
     if (!registroModal) return;
     const doc = gerarDocPDF(registroModal);
-    const nomeArq = `manutencao_${registroModal.maquinaNome.replace(/\s/g,'_')}_${registroModal.dataHoraLocal.replace(/[\/\s:,]/g,'-')}.pdf`;
-    doc.save(nomeArq);
+    doc.save(`manutencao_${registroModal.maquinaNome.replace(/\s/g,'_')}_${registroModal.dataHoraLocal.replace(/[\/\s:,]/g,'-')}.pdf`);
   }
 
   // ===== EMAIL =====
@@ -952,47 +1225,42 @@
     const doc = gerarDocPDF(d);
     const nomeArq = `manutencao_${d.maquinaNome.replace(/\s/g,'_')}_${d.dataHoraLocal.replace(/[\/\s:,]/g,'-')}.pdf`;
     const pdfBase64 = doc.output('datauristring').split(',')[1];
-
     const itensHtml = d.itens.map((item, i) => `
       <tr style="background:${i % 2 === 0 ? '#f9f9f9' : '#fff'}">
         <td style="padding:6px 10px;font-size:13px">${i + 1}. ${item.texto}</td>
         <td style="padding:6px 10px;font-weight:bold;color:${item.resultado === 'OK' ? '#4CAF50' : '#E53935'};text-align:center">${item.resultado}</td>
         <td style="padding:6px 10px;font-size:12px;color:#888;font-style:italic">${item.observacao || ''}</td>
       </tr>`).join('');
-
-    const htmlEmail = `
-      <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto">
-        <div style="background:#111D5C;padding:20px;border-bottom:3px solid #35438C">
-          <h2 style="color:#FFFFFF;margin:0">⚙️ Manutenção Fluortech</h2>
-          <p style="color:#aaa;margin:4px 0 0">Relatório de Manutenção</p>
-        </div>
-        <div style="padding:20px;background:#fff">
-          <table style="width:100%;border-collapse:collapse;margin-bottom:20px">
-            <tr><td style="padding:6px 0;color:#666;width:140px">Código</td><td style="font-weight:bold;font-family:monospace;color:#111D5C">${d.codigoFormulario || '-'}</td></tr>
-            <tr><td style="padding:6px 0;color:#666;width:140px">Máquina</td><td style="font-weight:bold">${d.maquinaNome}</td></tr>
-            <tr><td style="padding:6px 0;color:#666">Setor</td><td>${d.maquinaSetor || '-'}</td></tr>
-            <tr><td style="padding:6px 0;color:#666">Técnico</td><td>${d.tecnicoNome}</td></tr>
-            <tr><td style="padding:6px 0;color:#666">Tipo</td><td>${d.tipoManutencao}</td></tr>
-            <tr><td style="padding:6px 0;color:#666">Data/Hora</td><td>${d.dataHoraLocal}</td></tr>
-            ${d.obsInicial ? `<tr><td style="padding:6px 0;color:#666">Obs. iniciais</td><td>${d.obsInicial}</td></tr>` : ''}
-          </table>
-          <div style="background:#f0f8f0;border-left:4px solid #4CAF50;padding:10px 14px;margin-bottom:8px">✔ <strong>${d.itens.length - nok} itens OK</strong></div>
-          ${nok > 0 ? `<div style="background:#fff0f0;border-left:4px solid #E53935;padding:10px 14px;margin-bottom:20px">✘ <strong>${nok} itens NOK</strong></div>` : '<div style="margin-bottom:20px"></div>'}
-          <table style="width:100%;border-collapse:collapse;border:1px solid #eee">
-            <thead><tr style="background:#111D5C">
-              <th style="padding:8px 10px;color:#FFFFFF;text-align:left">Item</th>
-              <th style="padding:8px 10px;color:#FFFFFF;text-align:center">Resultado</th>
-              <th style="padding:8px 10px;color:#FFFFFF;text-align:left">Observação</th>
-            </tr></thead>
-            <tbody>${itensHtml}</tbody>
-          </table>
-        </div>
-        <div style="background:#f5f5f5;padding:14px 20px;font-size:12px;color:#aaa;text-align:center">
-          O PDF completo com assinatura está em anexo neste email.<br>
-          Fluortech Manutenções · ${d.dataHoraLocal}
-        </div>
-      </div>`;
-
+    const htmlEmail = `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto">
+      <div style="background:#111D5C;padding:20px;border-bottom:3px solid #35438C">
+        <h2 style="color:#FFFFFF;margin:0">⚙️ Manutenção Fluortech</h2>
+        <p style="color:#aaa;margin:4px 0 0">Relatório de Manutenção</p>
+      </div>
+      <div style="padding:20px;background:#fff">
+        <table style="width:100%;border-collapse:collapse;margin-bottom:20px">
+          <tr><td style="padding:6px 0;color:#666;width:140px">Código</td><td style="font-weight:bold;font-family:monospace;color:#111D5C">${d.codigoFormulario || '-'}</td></tr>
+          <tr><td style="padding:6px 0;color:#666">Máquina</td><td style="font-weight:bold">${d.maquinaNome}</td></tr>
+          <tr><td style="padding:6px 0;color:#666">Setor</td><td>${d.maquinaSetor || '-'}</td></tr>
+          <tr><td style="padding:6px 0;color:#666">Técnico</td><td>${d.tecnicoNome}</td></tr>
+          <tr><td style="padding:6px 0;color:#666">Tipo</td><td>${d.tipoManutencao}</td></tr>
+          <tr><td style="padding:6px 0;color:#666">Data/Hora</td><td>${d.dataHoraLocal}</td></tr>
+          ${d.obsInicial ? `<tr><td style="padding:6px 0;color:#666">Obs. iniciais</td><td>${d.obsInicial}</td></tr>` : ''}
+        </table>
+        <div style="background:#f0f8f0;border-left:4px solid #4CAF50;padding:10px 14px;margin-bottom:8px">✔ <strong>${d.itens.length - nok} itens OK</strong></div>
+        ${nok > 0 ? `<div style="background:#fff0f0;border-left:4px solid #E53935;padding:10px 14px;margin-bottom:20px">✘ <strong>${nok} itens NOK</strong></div>` : '<div style="margin-bottom:20px"></div>'}
+        <table style="width:100%;border-collapse:collapse;border:1px solid #eee">
+          <thead><tr style="background:#111D5C">
+            <th style="padding:8px 10px;color:#FFFFFF;text-align:left">Item</th>
+            <th style="padding:8px 10px;color:#FFFFFF;text-align:center">Resultado</th>
+            <th style="padding:8px 10px;color:#FFFFFF;text-align:left">Observação</th>
+          </tr></thead>
+          <tbody>${itensHtml}</tbody>
+        </table>
+      </div>
+      <div style="background:#f5f5f5;padding:14px 20px;font-size:12px;color:#aaa;text-align:center">
+        O PDF completo com assinatura está em anexo.<br>Fluortech Manutenções · ${d.dataHoraLocal}
+      </div>
+    </div>`;
     const resp = await fetch('https://api.brevo.com/v3/smtp/email', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'api-key': BREVO_API_KEY },
@@ -1013,11 +1281,11 @@
       const q = window._query(window._collection(window._db, 'manutencoes'), window._orderBy('dataHora', 'desc'));
       const snap = await window._getDocs(q);
       todosRegistros = [];
-      snap.forEach(doc => todosRegistros.push({ id: doc.id, ...doc.data() }));
+      snap.forEach(d => todosRegistros.push({ id: d.id, ...d.data() }));
       atualizarStats();
       renderizarTabela(todosRegistros);
     } catch (e) {
-      document.getElementById('tabela-body').innerHTML = '<tr><td colspan="7" style="padding:20px;color:#e57373;text-align:center">Erro ao carregar registros.</td></tr>';
+      document.getElementById('tabela-body').innerHTML = '<tr><td colspan="8" style="padding:20px;color:#e57373;text-align:center">Erro ao carregar registros.</td></tr>';
     }
   }
 
@@ -1025,73 +1293,49 @@
     if (!lista) lista = todosRegistros;
     const mes = document.getElementById('filtro-mes') ? document.getElementById('filtro-mes').value : '';
     const ano = document.getElementById('filtro-ano') ? document.getElementById('filtro-ano').value : '';
-
     const comNok = lista.filter(r => r.itens && r.itens.some(i => i.resultado === 'NOK')).length;
     const maquinasUnicas = new Set(lista.map(r => r.maquinaId)).size;
-
-    // Total — ignorar filtro de mês, contar apenas por ano
     const totalPorAno = ano
-      ? todosRegistros.filter(r => {
-          const partes = (r.dataHoraLocal || '').split('/');
-          return partes.length >= 3 && partes[2].split(',')[0].trim() === ano;
-        }).length
+      ? todosRegistros.filter(r => { const p = (r.dataHoraLocal || '').split('/'); return p.length >= 3 && p[2].split(',')[0].trim() === ano; }).length
       : todosRegistros.length;
     document.getElementById('stat-total').textContent = totalPorAno;
     document.getElementById('label-total').textContent = ano ? `Total em ${ano}` : 'Total de Manutenções';
-
-    // Mês — filtrado por mês se selecionado
     const nomesMeses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
     if (mes) {
-      const doMes = lista.filter(r => {
-        const partes = (r.dataHoraLocal || '').split('/');
-        return partes.length >= 2 && partes[1].padStart(2,'0') === mes;
-      }).length;
+      const doMes = lista.filter(r => { const p = (r.dataHoraLocal || '').split('/'); return p.length >= 2 && p[1].padStart(2,'0') === mes; }).length;
       document.getElementById('stat-mes').textContent = doMes;
       document.getElementById('label-mes').textContent = `Em ${nomesMeses[parseInt(mes)-1]}`;
     } else {
       const agora = new Date();
-      const mesAtualStr = String(agora.getMonth() + 1).padStart(2,'0');
-      const anoAtual = String(agora.getFullYear());
-      const doMesAtual = lista.filter(r => {
-        const partes = (r.dataHoraLocal || '').split('/');
-        if (partes.length < 3) return false;
-        return partes[1].padStart(2,'0') === mesAtualStr && partes[2].split(',')[0].trim() === anoAtual;
-      }).length;
-      document.getElementById('stat-mes').textContent = doMesAtual;
+      const mesStr = String(agora.getMonth() + 1).padStart(2,'0');
+      const anoStr = String(agora.getFullYear());
+      const doMes = lista.filter(r => { const p = (r.dataHoraLocal || '').split('/'); return p.length >= 3 && p[1].padStart(2,'0') === mesStr && p[2].split(',')[0].trim() === anoStr; }).length;
+      document.getElementById('stat-mes').textContent = doMes;
       document.getElementById('label-mes').textContent = 'No Mês';
     }
-
     document.getElementById('stat-nok').textContent = comNok;
-    document.getElementById('label-nok').textContent = 'Com Itens NOK';
     document.getElementById('stat-maquinas').textContent = maquinasUnicas;
-    document.getElementById('label-maquinas').textContent = 'Máquinas Atendidas';
   }
 
   function renderizarTabela(lista) {
     const tbody = document.getElementById('tabela-body');
-    if (lista.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="7"><div class="sem-registros">📭 Nenhum registro encontrado.</div></td></tr>';
-      return;
-    }
+    if (lista.length === 0) { tbody.innerHTML = '<tr><td colspan="8"><div class="sem-registros">📭 Nenhum registro encontrado.</div></td></tr>'; return; }
     tbody.innerHTML = lista.map(r => {
       const nok = r.itens ? r.itens.filter(i => i.resultado === 'NOK').length : 0;
       const ok = r.itens ? r.itens.filter(i => i.resultado === 'OK').length : 0;
-      return `
-        <tr>
-          <td style="white-space:nowrap;font-family:monospace;font-size:0.82rem;color:var(--cor-destaque);font-weight:600">${r.codigoFormulario || '-'}</td>
-          <td style="white-space:nowrap">${r.dataHoraLocal || '-'}</td>
-          <td><strong>${r.maquinaNome || '-'}</strong></td>
-          <td>${r.maquinaSetor || '-'}</td>
-          <td>${r.tecnicoNome || '-'}</td>
-          <td><span class="badge-tipo">${r.tipoManutencao || '-'}</span></td>
-          <td>
-            <span class="badge-ok">✔ ${ok} OK</span>
-            ${nok > 0 ? `<span class="badge-nok" style="margin-left:4px">✘ ${nok} NOK</span>` : ''}
-          </td>
-          <td>
-            <button class="btn-mini" onclick="abrirModal('${r.id}')">Ver detalhes</button>
-          </td>
-        </tr>`;
+      return `<tr>
+        <td style="white-space:nowrap;font-family:monospace;font-size:0.82rem;color:var(--cor-destaque);font-weight:600">${r.codigoFormulario || '-'}</td>
+        <td style="white-space:nowrap">${r.dataHoraLocal || '-'}</td>
+        <td><strong>${r.maquinaNome || '-'}</strong></td>
+        <td>${r.maquinaSetor || '-'}</td>
+        <td>${r.tecnicoNome || '-'}</td>
+        <td><span class="badge-tipo">${r.tipoManutencao || '-'}</span></td>
+        <td>
+          <span class="badge-ok">✔ ${ok} OK</span>
+          ${nok > 0 ? `<span class="badge-nok" style="margin-left:4px">✘ ${nok} NOK</span>` : ''}
+        </td>
+        <td><button class="btn-mini" onclick="abrirModal('${r.id}')">Ver detalhes</button></td>
+      </tr>`;
     }).join('');
   }
 
@@ -1105,16 +1349,12 @@
       const matchBusca = !busca || (r.maquinaNome || '').toLowerCase().includes(busca) || (r.tecnicoNome || '').toLowerCase().includes(busca);
       const matchTipo = !tipo || r.tipoManutencao === tipo;
       const matchSetor = !setor || r.maquinaSetor === setor;
-      // Data no formato dd/mm/aaaa, hh:mm:ss
-      let matchMes = true;
-      let matchAno = true;
+      let matchMes = true, matchAno = true;
       if (mes || ano) {
-        const partes = (r.dataHoraLocal || '').split('/');
-        if (partes.length >= 3) {
-          const mesDado = partes[1].padStart(2, '0');
-          const anoDado = partes[2].split(',')[0].trim();
-          if (mes) matchMes = mesDado === mes;
-          if (ano) matchAno = anoDado === ano;
+        const p = (r.dataHoraLocal || '').split('/');
+        if (p.length >= 3) {
+          if (mes) matchMes = p[1].padStart(2,'0') === mes;
+          if (ano) matchAno = p[2].split(',')[0].trim() === ano;
         }
       }
       return matchBusca && matchTipo && matchSetor && matchMes && matchAno;
@@ -1150,22 +1390,13 @@
           </div>
           <span class="${item.resultado === 'OK' ? 'badge-ok' : 'badge-nok'}">${item.resultado}</span>
         </div>`).join('')}
-      ${r.assinatura ? `
-        <div class="modal-assinatura">
-          <label>Assinatura do Técnico</label>
-          <img src="${r.assinatura}" alt="Assinatura" />
-        </div>` : ''}
-    `;
+      ${r.assinatura ? `<div class="modal-assinatura"><label>Assinatura do Técnico</label><img src="${r.assinatura}" alt="Assinatura" /></div>` : ''}`;
     document.getElementById('modal-detalhe').classList.add('ativo');
   }
 
-  function fecharModal() {
-    document.getElementById('modal-detalhe').classList.remove('ativo');
-    registroModal = null;
-  }
+  function fecharModal() { document.getElementById('modal-detalhe').classList.remove('ativo'); registroModal = null; }
 
   // ===== ADMIN =====
-  const SENHA_ADMIN = '123456';
   let maquinasAdmin = [];
 
   function abrirAdminLogin() {
@@ -1175,16 +1406,11 @@
     setTimeout(() => document.getElementById('input-senha-admin').focus(), 100);
   }
 
-  function fecharAdminLogin() {
-    document.getElementById('modal-admin-login').classList.remove('ativo');
-  }
+  function fecharAdminLogin() { document.getElementById('modal-admin-login').classList.remove('ativo'); }
 
   function entrarAdmin() {
     const senha = document.getElementById('input-senha-admin').value;
-    if (senha !== SENHA_ADMIN) {
-      document.getElementById('erro-admin').style.display = 'block';
-      return;
-    }
+    if (senha !== SENHA_ADMIN) { document.getElementById('erro-admin').style.display = 'block'; return; }
     fecharAdminLogin();
     sessionStorage.setItem('fl_logado', '1');
     sessionStorage.setItem('fl_perfil', 'admin');
@@ -1193,16 +1419,15 @@
     irPara('tela-admin');
   }
 
-  function sairAdmin() {
-    sessionStorage.clear();
-    irPara('tela-login');
-  }
+  function sairAdmin() { sessionStorage.clear(); irPara('tela-login'); }
 
   function mostrarTabAdmin(tab) {
-    document.getElementById('tab-lista').classList.toggle('ativa', tab === 'lista');
-    document.getElementById('tab-nova').classList.toggle('ativa', tab === 'nova');
+    ['lista','nova','calendario'].forEach(t => {
+      document.getElementById(`tab-${t === 'lista' ? 'lista' : t === 'nova' ? 'nova' : 'calendario-admin'}`).classList.toggle('ativa', t === tab);
+    });
     document.getElementById('admin-lista').style.display = tab === 'lista' ? 'block' : 'none';
     document.getElementById('admin-form').style.display = tab === 'nova' ? 'block' : 'none';
+    document.getElementById('admin-calendario').style.display = tab === 'calendario' ? 'block' : 'none';
     if (tab === 'nova') {
       document.getElementById('admin-maquina-id').value = '';
       document.getElementById('admin-nome').value = '';
@@ -1211,12 +1436,13 @@
       document.getElementById('admin-cabecalho-edicao').style.display = 'none';
       renderizarChecklistAdmin([{ secao: 'Inspeção Geral', texto: '' }]);
     }
+    if (tab === 'calendario') carregarCalendarioAdmin();
   }
 
   async function carregarMaquinasAdmin() {
     const snap = await window._getDocs(window._collection(window._db, 'maquinas'));
     maquinasAdmin = [];
-    snap.forEach(d => maquinasAdmin.push({ id: d.id, ...d.data() }));
+    snap.forEach(d => { const data = d.data(); if (data.nome) maquinasAdmin.push({ id: d.id, ...data }); });
     maquinasAdmin.sort((a, b) => a.nome.localeCompare(b.nome));
     renderizarListaAdmin(maquinasAdmin);
   }
@@ -1226,10 +1452,7 @@
     if (lista.length === 0) { el.innerHTML = '<p style="color:#aaa;padding:16px;text-align:center">Nenhuma máquina encontrada.</p>'; return; }
     el.innerHTML = lista.map(m => `
       <div class="maquina-item-admin">
-        <div class="info">
-          <strong>${m.nome}</strong>
-          <span>${m.setor || ''} · ${(m.checklist || []).length} itens</span>
-        </div>
+        <div class="info"><strong>${m.nome}</strong><span>${m.setor || ''} · ${(m.checklist || []).length} itens</span></div>
         <div class="acoes">
           <button class="btn-editar" onclick="editarMaquinaAdmin('${m.id}')">✏️ Editar</button>
           <button class="btn-excluir" onclick="excluirMaquinaAdmin('${m.id}', '${m.nome}')">🗑️ Excluir</button>
@@ -1238,16 +1461,11 @@
   }
 
   function filtrarAdmin(q) {
-    const filtradas = maquinasAdmin.filter(m =>
-      m.nome.toLowerCase().includes(q.toLowerCase()) ||
-      (m.setor || '').toLowerCase().includes(q.toLowerCase())
-    );
-    renderizarListaAdmin(filtradas);
+    renderizarListaAdmin(maquinasAdmin.filter(m => m.nome.toLowerCase().includes(q.toLowerCase()) || (m.setor || '').toLowerCase().includes(q.toLowerCase())));
   }
 
   function renderizarChecklistAdmin(itens) {
-    const el = document.getElementById('checklist-admin');
-    el.innerHTML = itens.map((item, i) => `
+    document.getElementById('checklist-admin').innerHTML = itens.map((item, i) => `
       <div class="checklist-item-admin" id="checklist-item-${i}">
         <input type="text" placeholder="Descrição do item..." value="${item.texto || ''}" data-index="${i}" />
         <button onclick="removerItemChecklist(${i})">✕</button>
@@ -1273,26 +1491,20 @@
   function editarMaquinaAdmin(id) {
     const m = maquinasAdmin.find(m => m.id === id);
     if (!m) return;
-
-    // Mostrar aba primeiro (sem resetar campos)
     document.getElementById('tab-lista').classList.remove('ativa');
     document.getElementById('tab-nova').classList.add('ativa');
     document.getElementById('admin-lista').style.display = 'none';
     document.getElementById('admin-form').style.display = 'block';
+    document.getElementById('admin-calendario').style.display = 'none';
     document.getElementById('tab-nova').textContent = '✏️ Editando';
-
-    // Preencher campos
     document.getElementById('admin-maquina-id').value = id;
     document.getElementById('admin-nome').value = m.nome;
     document.getElementById('admin-setor').value = m.setor || '';
     document.getElementById('btn-salvar-admin').textContent = '💾 Atualizar Máquina';
     renderizarChecklistAdmin(m.checklist && m.checklist.length > 0 ? m.checklist : [{ secao: 'Inspeção Geral', texto: '' }]);
-
-    // Mostrar cabeçalho de identificação
     document.getElementById('admin-cabecalho-edicao').style.display = 'block';
     document.getElementById('admin-cabecalho-nome').textContent = m.nome;
     document.getElementById('admin-cabecalho-setor').textContent = (m.setor || '') + ' · ' + (m.checklist || []).length + ' itens no checklist';
-
     window.scrollTo(0, 0);
   }
 
@@ -1302,54 +1514,47 @@
     const setor = document.getElementById('admin-setor').value;
     if (!nome) { mostrarToast('Informe o nome da máquina.'); return; }
     if (!setor) { mostrarToast('Selecione o setor.'); return; }
-
     const inputs = document.querySelectorAll('#checklist-admin input[type=text]');
-    const checklist = Array.from(inputs)
-      .map(inp => ({ secao: 'Inspeção Geral', texto: inp.value.trim() }))
-      .filter(i => i.texto !== '');
-
+    const checklist = Array.from(inputs).map(inp => ({ secao: 'Inspeção Geral', texto: inp.value.trim() })).filter(i => i.texto !== '');
     if (checklist.length === 0) { mostrarToast('Adicione pelo menos um item no checklist.'); return; }
-
     const btn = document.getElementById('btn-salvar-admin');
-    btn.disabled = true;
-    btn.textContent = '⏳ Salvando...';
-
-    const dados = { nome, setor, checklist };
-
+    btn.disabled = true; btn.textContent = '⏳ Salvando...';
     try {
       if (id) {
-        await window._setDoc(window._doc(window._db, 'maquinas', id), dados);
+        await window._setDoc(window._doc(window._db, 'maquinas', id), { nome, setor, checklist });
         mostrarToast('✅ Máquina atualizada com sucesso!');
       } else {
-        await window._addDoc(window._collection(window._db, 'maquinas'), dados);
+        const novoDoc = await window._addDoc(window._collection(window._db, 'maquinas'), { nome, setor, checklist });
+        // Criar entrada no calendário para nova máquina
+        await window._setDoc(window._doc(window._db, 'calendario', novoDoc.id), {
+          maquinaId: novoDoc.id, maquinaNome: nome, maquinaSetor: setor,
+          proximaManutencao: '2026-10-10', ultimaManutencao: null, intervaloMeses: 6
+        });
         mostrarToast('✅ Máquina cadastrada com sucesso!');
       }
       await carregarMaquinasAdmin();
       await carregarMaquinas();
       mostrarTabAdmin('lista');
-      document.getElementById('tab-nova').textContent = '➕ Nova Máquina';
-    } catch (e) {
-      mostrarToast('Erro ao salvar. Tente novamente.');
-    }
-    btn.disabled = false;
-    btn.textContent = '💾 Salvar Máquina';
+      document.getElementById('tab-nova').textContent = '➕ Nova';
+    } catch (e) { mostrarToast('Erro ao salvar. Tente novamente.'); }
+    btn.disabled = false; btn.textContent = '💾 Salvar Máquina';
   }
 
   async function excluirMaquinaAdmin(id, nome) {
-    if (!confirm(`Tem certeza que deseja excluir a máquina "${nome}"? Esta ação não pode ser desfeita.`)) return;
+    if (!confirm(`Tem certeza que deseja excluir "${nome}"? Esta ação não pode ser desfeita.`)) return;
     try {
       await window._deleteDoc(window._doc(window._db, 'maquinas', id));
+      // Remover do calendário também
+      try { await window._deleteDoc(window._doc(window._db, 'calendario', id)); } catch(e) {}
       mostrarToast(`✅ Máquina ${nome} excluída.`);
       await carregarMaquinasAdmin();
       await carregarMaquinas();
-    } catch (e) {
-      mostrarToast('Erro ao excluir. Tente novamente.');
-    }
+    } catch (e) { mostrarToast('Erro ao excluir. Tente novamente.'); }
   }
 
   function cancelarFormAdmin() {
     mostrarTabAdmin('lista');
-    document.getElementById('tab-nova').textContent = '➕ Nova Máquina';
+    document.getElementById('tab-nova').textContent = '➕ Nova';
   }
 
   // ===== EXPORTAR EXCEL =====
@@ -1359,57 +1564,36 @@
     const tipo = document.getElementById('filtro-tipo').value;
     const setor = document.getElementById('filtro-setor').value;
     const busca = document.getElementById('filtro-busca').value.toLowerCase();
-
     const filtrados = todosRegistros.filter(r => {
       const matchBusca = !busca || (r.maquinaNome || '').toLowerCase().includes(busca) || (r.tecnicoNome || '').toLowerCase().includes(busca);
       const matchTipo = !tipo || r.tipoManutencao === tipo;
       const matchSetor = !setor || r.maquinaSetor === setor;
       let matchMes = true, matchAno = true;
       if (mes || ano) {
-        const partes = (r.dataHoraLocal || '').split('/');
-        if (partes.length >= 3) {
-          if (mes) matchMes = partes[1].padStart(2,'0') === mes;
-          if (ano) matchAno = partes[2].split(',')[0].trim() === ano;
+        const p = (r.dataHoraLocal || '').split('/');
+        if (p.length >= 3) {
+          if (mes) matchMes = p[1].padStart(2,'0') === mes;
+          if (ano) matchAno = p[2].split(',')[0].trim() === ano;
         }
       }
       return matchBusca && matchTipo && matchSetor && matchMes && matchAno;
     });
-
     if (filtrados.length === 0) { mostrarToast('Nenhum registro para exportar.'); return; }
-
-    // Montar CSV com separador ponto e vírgula (padrão Excel português)
     const sep = ';';
     const cabecalho = ['Código','Data/Hora','Máquina','Setor','Técnico','Tipo','Total Itens','Itens OK','Itens NOK','Obs. Iniciais','Itens NOK - Detalhes'];
     const linhas = filtrados.map(r => {
       const nok = r.itens ? r.itens.filter(i => i.resultado === 'NOK').length : 0;
       const ok = r.itens ? r.itens.filter(i => i.resultado === 'OK').length : 0;
       const total = r.itens ? r.itens.length : 0;
-      const detalhesNok = r.itens
-        ? r.itens
-            .filter(i => i.resultado === 'NOK')
-            .map(i => i.texto + (i.observacao ? ' (' + i.observacao + ')' : ''))
-            .join(' | ')
-        : '';
-      return [
-        r.codigoFormulario || '',
-        r.dataHoraLocal || '',
-        r.maquinaNome || '',
-        r.maquinaSetor || '',
-        r.tecnicoNome || '',
-        r.tipoManutencao || '',
-        total, ok, nok,
-        r.obsInicial || '',
-        detalhesNok
-      ].map(v => '"' + String(v).replace(/"/g, '""') + '"').join(sep);
+      const detalhesNok = r.itens ? r.itens.filter(i => i.resultado === 'NOK').map(i => i.texto + (i.observacao ? ' (' + i.observacao + ')' : '')).join(' | ') : '';
+      return [r.codigoFormulario||'', r.dataHoraLocal||'', r.maquinaNome||'', r.maquinaSetor||'', r.tecnicoNome||'', r.tipoManutencao||'', total, ok, nok, r.obsInicial||'', detalhesNok]
+        .map(v => '"' + String(v).replace(/"/g, '""') + '"').join(sep);
     });
-
     const csv = '\uFEFF' + [cabecalho.join(sep), ...linhas].join('\n');
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    const nomeArq = `manutencoes_fluortech_${ano || 'todos'}_${mes || 'todos'}.csv`;
-    a.href = url; a.download = nomeArq; a.click();
-    URL.revokeObjectURL(url);
+    a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
+    a.download = `manutencoes_fluortech_${ano||'todos'}_${mes||'todos'}.csv`;
+    a.click();
     mostrarToast(`✅ ${filtrados.length} registros exportados!`);
   }
 
@@ -1463,6 +1647,19 @@
   window.filtrarAdmin = filtrarAdmin;
   window.abrirModal = abrirModal;
   window.fecharModal = fecharModal;
+  window.filtrarCalendario = filtrarCalendario;
+  window.voltarDoCalendario = voltarDoCalendario;
+  window.filtrarCalendarioAdmin = filtrarCalendarioAdmin;
+  window.abrirModalData = abrirModalData;
+  window.fecharModalData = fecharModalData;
+  window.salvarDataCalendario = salvarDataCalendario;
+
+  // Expor função para acesso ao calendário a partir do menu
+  window.abrirCalendario = function(telaOrigem) {
+    telaAnteriorCalendario = telaOrigem || 'tela-painel';
+    carregarCalendario();
+    irPara('tela-calendario');
+  };
 </script>
 </body>
 </html>
