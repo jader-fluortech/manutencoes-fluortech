@@ -438,6 +438,9 @@
 <div id="tela-maquinas" class="tela">
   <div class="container">
     <div class="instrucao">📋 Selecione a máquina.</div>
+    <div style="text-align:right;margin-bottom:10px">
+      <button class="btn-mini" onclick="abrirCalendario('tela-maquinas')" style="padding:6px 14px;font-size:0.82rem">📅 Calendário</button>
+    </div>
     <div class="busca-wrapper">
       <span class="icone-busca">🔍</span>
       <input type="text" id="busca-maquina" placeholder="Buscar máquina..." oninput="filtrarMaquinas()" />
@@ -520,7 +523,7 @@
   <div class="container-wide">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px">
       <h2 style="font-size:1.2rem;color:var(--cor-destaque)">📊 Painel do Gestor</h2>
-      <button class="btn-mini" onclick="irPara('tela-calendario')" style="padding:8px 16px;font-size:0.85rem">📅 Ver Calendário</button>
+      <button class="btn-mini" onclick="abrirCalendario('tela-painel')" style="padding:8px 16px;font-size:0.85rem">📅 Ver Calendário</button>
     </div>
     <div class="painel-stats" id="painel-stats">
       <div class="stat-card"><div class="stat-numero" id="stat-total">—</div><div class="stat-label" id="label-total">Total de Manutenções</div></div>
