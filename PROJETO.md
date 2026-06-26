@@ -1,289 +1,558 @@
-# Sistema de Manutenções Fluortech — Documentação do Projeto
+# Sistema de Manutenções Fluortech — PROJECT.md
 
-## Links importantes
-- **Site:** https://jader-fluortech.github.io/manutencoes-fluortech/
-- **GitHub:** https://github.com/jader-fluortech/manutencoes-fluortech
-- **Firebase:** https://console.firebase.google.com — projeto "Manutencoes Fluortech"
-- **Brevo (email):** https://app.brevo.com
+## Visão Geral
 
----
+Sistema web para gestão de manutenções industriais da Fluortech.
 
-## Estrutura do projeto
+O sistema permite que técnicos executem checklists de manutenção diretamente pelo navegador, realizem assinatura digital e gerem registros rastreáveis armazenados no Firebase. Os gestores podem consultar históricos, exportar relatórios e acompanhar indicadores operacionais.
 
-Todo o código está em um único arquivo `index.html` no GitHub. Não há arquivos separados de CSS ou JavaScript — tudo está junto no mesmo arquivo. O arquivo `logo.png` também está no repositório.
+A aplicação funciona integralmente no navegador e não requer instalação.
 
 ---
 
-## Senhas de acesso
+# Links Importantes
 
-| Perfil | Senha |
-|---|---|
-| Técnico | 1234 |
-| Gestor | 12345 |
-| Admin | 123456 |
+## Site
 
-As senhas estão definidas no `index.html`:
-- `const SENHA_TECNICO = '1234';`
-- `const SENHA_GESTOR = '12345';`
-- `const SENHA_ADMIN = '123456';`
+https://jader-fluortech.github.io/manutencoes-fluortech/
 
----
+## Repositório GitHub
 
-## Perfis de acesso
-
-**Técnico** — Acessa a lista de máquinas, preenche o checklist, assina digitalmente e finaliza. Ao finalizar, o sistema salva no Firebase e envia email com PDF em anexo.
-
-**Gestor** — Acessa o painel com histórico de todas as manutenções, filtros por mês/ano/setor/tipo, visualização de detalhes, download de PDF e exportação para Excel (CSV com separador `;`).
-
-**Admin** — Acessa via link discreto "acesso admin" na tela de login. Permite adicionar, editar e excluir máquinas e checklists. Sessão persiste ao recarregar a página (sessionStorage).
-
----
-
-## Código de formulário
-
-Gerado automaticamente ao finalizar cada manutenção. Formato:
-
-| Tipo | Prefixo | Exemplo |
-|---|---|---|
-| Preditiva | PD | PD0626A001 |
-| Preventiva | PV | PV0626E005 |
-| Corretiva | C | C0626B001 |
-| Inspeção | I | I0626H013 |
-
-Estrutura: `[PREFIXO][MÊS][ANO][CÓDIGO_MÁQUINA]`
-
-O código aparece em:
-- Tela de sucesso após finalizar
-- PDF gerado (campo após Obs. iniciais)
-- Email enviado
-- Painel do gestor (primeira coluna)
-- Modal de detalhes
-- Exportação Excel
-
----
+https://github.com/jader-fluortech/manutencoes-fluortech
 
 ## Firebase
 
-**Projeto:** Manutencoes Fluortech (Plano Spark — gratuito)
-**Região:** southamerica-east1 (São Paulo)
+Projeto: **Manutencoes Fluortech**
 
-### Credenciais Firebase (já no index.html)
+https://console.firebase.google.com
+
+## Brevo
+
+https://app.brevo.com
+
+---
+
+# Arquitetura do Projeto
+
+## Estrutura Física
+
+Todo o sistema está concentrado em um único arquivo:
+
+```text
+index.html
+```
+
+O arquivo contém:
+
+* HTML
+* CSS
+* JavaScript
+* Integração Firebase
+* Integração Brevo
+* Geração de PDF
+* Exportação CSV
+
+Arquivos adicionais:
+
+```text
+logo.png
+```
+
+Não existem arquivos separados para:
+
+* CSS
+* JavaScript
+* Configurações
+
+Toda a lógica da aplicação encontra-se dentro do próprio `index.html`.
+
+---
+
+# Tecnologias Utilizadas
+
+## Frontend
+
+* HTML5
+* CSS3
+* JavaScript Vanilla
+
+## Bibliotecas
+
+### Firebase SDK
+
+Versão:
+
+```text
+10.12.0
+```
+
+Serviços utilizados:
+
+* Firebase App
+* Cloud Firestore
+
+### jsPDF
+
+Utilizada para geração dos relatórios PDF.
+
+---
+
+# Perfis de Acesso
+
+## Técnico
+
+Senha:
+
+```text
+1234
+```
+
+Funcionalidades:
+
+* Selecionar máquina
+* Pesquisar máquinas por nome ou setor
+* Informar nome do técnico
+* Escolher tipo de manutenção
+* Registrar observações iniciais
+* Preencher checklist
+* Registrar observações em itens NOK
+* Assinar digitalmente
+* Finalizar manutenção
+* Gerar PDF
+* Enviar relatório por email
+
+---
+
+## Gestor
+
+Senha:
+
+```text
+12345
+```
+
+Funcionalidades:
+
+* Visualizar histórico completo
+* Filtrar por:
+
+  * Mês
+  * Ano
+  * Setor
+  * Tipo
+* Consultar indicadores
+* Visualizar detalhes completos
+* Baixar PDF
+* Exportar CSV
+
+---
+
+## Administrador
+
+Senha:
+
+```text
+123456
+```
+
+Acesso realizado através do link discreto:
+
+```text
+Acesso Admin
+```
+
+Funcionalidades:
+
+* Adicionar máquinas
+* Editar máquinas
+* Excluir máquinas
+* Configurar checklists
+* Gerenciar calendário preventivo
+* Alterar intervalos de manutenção
+
+---
+
+# Persistência de Sessão
+
+O sistema utiliza `sessionStorage`.
+
+Chaves utilizadas:
+
 ```javascript
-apiKey: "AIzaSyDZadgIZLA4aOz33SQJDcxUgTrMKXwrf3Q"
-authDomain: "manutencoes-fluortech.firebaseapp.com"
-projectId: "manutencoes-fluortech"
-storageBucket: "manutencoes-fluortech.firebasestorage.app"
-messagingSenderId: "524530859774"
-appId: "1:524530859774:web:3d784e49984d45a85a2faf"
+fl_logado
+fl_perfil
+fl_tela
 ```
 
-### Coleções do Firestore
+Objetivos:
 
-**maquinas** — Cada documento representa uma máquina com os campos:
-- `nome` (string) — Ex: "A001 - Prensa Hidráulica"
-- `setor` (string) — Ex: "Moldagem"
-- `tipo` (string) — Ex: "PRENSA HIDRÁULICA"
-- `checklist` (array) — Lista de objetos `{ secao, texto }`
+* Manter usuário autenticado
+* Restaurar tela após atualização da página
+* Preservar navegação do sistema
 
-**manutencoes** — Cada documento representa um registro de manutenção com os campos:
-- `maquinaId`, `maquinaNome`, `maquinaSetor`
-- `tecnicoNome`, `tipoManutencao`, `obsInicial`
-- `itens` (array) — `{ texto, secao, resultado, observacao }`
-- `assinatura` (string base64)
-- `dataHora` (timestamp Firebase)
-- `dataHoraLocal` (string) — Ex: "19/06/2026, 15:30:00"
-- `codigoFormulario` (string) — Ex: "C0626E005"
+---
 
-### Regras do Firebase
+# Fluxo Operacional
 
-**Regras ativas (padrão):**
+## Técnico
+
+1. Login
+2. Seleção da máquina
+3. Informar técnico responsável
+4. Escolher tipo de manutenção
+5. Inserir observações iniciais
+6. Preencher checklist
+7. Assinar digitalmente
+8. Finalizar manutenção
+9. Salvar no Firebase
+10. Gerar PDF
+11. Enviar email automático
+
+---
+
+## Gestor
+
+1. Login
+2. Acesso ao painel
+3. Aplicação de filtros
+4. Consulta de registros
+5. Visualização de detalhes
+6. Download de PDF
+7. Exportação CSV
+
+---
+
+## Administrador
+
+1. Login Admin
+2. Gerenciamento de máquinas
+3. Gerenciamento de checklists
+4. Configuração do calendário preventivo
+
+---
+
+# Código de Formulário
+
+Cada manutenção recebe um identificador único.
+
+Formato:
+
+```text
+[PREFIXO][MÊS][ANO][CÓDIGO_MÁQUINA]
 ```
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /maquinas/{id} {
-      allow read: if true;
-      allow write: if true;
+
+## Prefixos
+
+| Tipo       | Prefixo |
+| ---------- | ------- |
+| Preditiva  | PD      |
+| Preventiva | PV      |
+| Corretiva  | C       |
+| Inspeção   | I       |
+
+## Exemplos
+
+```text
+PD0626A001
+PV0626E005
+C0626B001
+I0626H013
+```
+
+O código é exibido em:
+
+* Tela de sucesso
+* PDF
+* Email
+* Histórico do gestor
+* Modal de detalhes
+* Exportação CSV
+
+---
+
+# Firebase
+
+## Projeto
+
+```text
+Manutencoes Fluortech
+```
+
+## Região
+
+```text
+southamerica-east1
+(São Paulo)
+```
+
+## Coleções
+
+### maquinas
+
+Estrutura:
+
+```json
+{
+  "nome": "E005 - Torno CNC Mach9",
+  "setor": "Usinagem",
+  "tipo": "TORNO CNC",
+  "checklist": [
+    {
+      "secao": "Inspeção Geral",
+      "texto": "Verificar lubrificação"
     }
-    match /manutencoes/{id} {
-      allow read: if true;
-      allow write: if true;
-    }
-  }
+  ]
 }
 ```
 
-**Regras abertas (usar temporariamente para rodar scripts no console):**
-```
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /{document=**} {
-      allow read, write: if true;
+---
+
+### manutencoes
+
+Estrutura:
+
+```json
+{
+  "maquinaId": "",
+  "maquinaNome": "",
+  "maquinaSetor": "",
+  "tecnicoNome": "",
+  "tipoManutencao": "",
+  "obsInicial": "",
+  "itens": [
+    {
+      "texto": "",
+      "secao": "",
+      "resultado": "OK",
+      "observacao": ""
     }
-  }
+  ],
+  "assinatura": "",
+  "dataHora": "",
+  "dataHoraLocal": "",
+  "codigoFormulario": ""
 }
 ```
-⚠️ Sempre restaurar as regras padrão após rodar scripts.
 
 ---
 
-## Email (Brevo)
+### calendario
 
-**Chave de API:** `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`
+Estrutura:
 
-**Emails que recebem os relatórios:**
-- jaderfilho@fluortech.com.br
-
-Para adicionar mais emails, editar no `index.html`:
-```javascript
-const EMAILS_DESTINO = [
-  'jaderfilho@fluortech.com.br',
-  // 'outro@fluortech.com.br',
-];
-```
-
-O email é enviado automaticamente ao finalizar um checklist com:
-- Corpo HTML com resumo da manutenção e código do formulário
-- PDF assinado em anexo
-
----
-
-## Cores do site
-
-```css
---cor-destaque: #111D5C;        /* azul escuro Fluortech */
---cor-destaque-hover: #1E2F8A;  /* azul médio */
---cor-fundo-tela: #FFFFFF;      /* branco */
---cor-fundo-card: #F4F6FB;      /* azul muito claro */
---cor-fundo-interno: #EEF1F8;   /* azul suave */
---cor-borda: #C5CBDF;           /* azul acinzentado */
---cor-texto: #1A1A2E;           /* azul quase preto */
---cor-ok: #2E7D32;              /* verde escuro */
---cor-nok: #C62828;             /* vermelho escuro */
---cor-link: #1565C0;            /* azul */
+```json
+{
+  "maquinaNome": "",
+  "proximaManutencao": "",
+  "intervaloMeses": 6
+}
 ```
 
 ---
 
-## Máquinas cadastradas (66 máquinas)
+# Pesquisa de Máquinas
 
-| Código | Equipamento | Setor |
-|---|---|---|
-| A001 | Prensa Hidráulica | Moldagem |
-| A002 | Prensa Hidráulica | Moldagem |
-| A003 | Prensa Hidráulica | Moldagem |
-| A004 | Prensa Hidráulica | Moldagem |
-| A006 | Prensa Hidráulica | Moldagem |
-| A007 | Prensa Hidráulica | Moldagem |
-| A008 | Prensa Hidráulica | Moldagem |
-| A009 | Prensa Hidráulica | Moldagem |
-| A010 | Prensa Hidráulica | Moldagem |
-| A011 | Prensa Hidráulica | Moldagem |
-| A012 | Prensa Hidráulica | Moldagem |
-| A013 | Prensa Hidráulica | Moldagem |
-| A014 | Prensa Hidráulica | Moldagem |
-| A022 | Prensa Manual | Sinterização |
-| A024 | Prensa Hidráulica | Moldagem |
-| B001 | Forno a Gás | Sinterização |
-| B002 | Forno a Gás | Sinterização |
-| B003 | Forno Elétrico | Sinterização |
-| B004 | Forno Elétrico | Sinterização |
-| B005 | Forno Elétrico (Estufa) | Moldagem |
-| B006 | Forno Elétrico (Estufa) | Usinagem |
-| C001 | Torno Mecânico | Usinagem |
-| C002 | Torno Mecânico | Moldagem |
-| C003 | Torno Mecânico | Usinagem |
-| C006 | Torno Mecânico | Usinagem |
-| D002 | Torno Revólver | Usinagem |
-| D003 | Torno Revólver | Usinagem |
-| D004 | Torno Revólver | Usinagem |
-| D005 | Torno Revólver | Usinagem |
-| D007 | Torno Revólver | Usinagem |
-| D011 | Torno Revólver | Usinagem |
-| E001 | Centro de Usinagem D800 | Usinagem |
-| E002 | Torno CNC GL 280 | Usinagem |
-| E003 | Torno CNC Mach9 | Usinagem |
-| E004 | Torno CNC Mach9 | Usinagem |
-| E005 | Torno CNC Mach9 | Usinagem |
-| E006 | Torno CNC Mach9 | Usinagem |
-| E008 | Torno CNC GL | Usinagem |
-| E009 | Torno CNC GSK | Usinagem |
-| E010 | Torno CNC | Usinagem |
-| E011 | Torno CNC Mach9 | Usinagem |
-| E012 | Torno CNC Mach9 | Usinagem |
-| E013 | Torno CNC GSK | Usinagem |
-| E014 | Torno CNC GSK | Usinagem |
-| E015 | Torno CNC GSK | Usinagem |
-| F008 | Torno Automático | Usinagem |
-| G005 | Refrigerador | N/A |
-| GDT 168 | Gerador | Externo |
-| H002 | Tamboreador | Tamboreamento |
-| H003 | Tamboreador | Tamboreamento |
-| H004 | Calandra | Usinagem |
-| H006 | Torno Laminador | Usinagem |
-| H011 | Prensa | Usinagem |
-| H012 | Prensa | Usinagem |
-| H013 | Bancada de Ranhura | Inspeção |
-| H015 | Freza | Acabamento |
-| H016 | Máquina de Estampar | Acabamento |
-| H018 | Seladora | Inspeção |
-| H019 | Freza | Acabamento |
-| K001 | Retífica | Usinagem |
-| K003 | Furadeira | N/A |
-| K004 | Serra Hidráulica Franho | Tamboreamento |
-| R001 | Retífica | Usinagem |
-| R003 | Retífica | Usinagem |
-| R004 | Retífica | Usinagem |
-| R005 | Esmeril Rebolo | Usinagem |
+Disponível para o perfil Técnico.
+
+Critérios:
+
+* Nome da máquina
+* Setor
+
+A filtragem ocorre em tempo real após carregamento dos registros do Firestore.
 
 ---
 
-## Checklists por setor
+# Checklists
 
-| Setor | Itens |
-|---|---|
-| Moldagem | Verificar nível de óleo hidráulico / Verificar pressão do sistema hidráulico / Inspecionar estado dos moldes e matrizes |
-| Sinterização | Verificar temperatura de operação do forno / Inspecionar resistências e elementos de aquecimento / Verificar sistema de exaustão e ventilação |
-| Usinagem | Verificar nível de fluido de corte (refrigerante) / Inspecionar ferramentas de corte e desgaste / Verificar lubrificação dos guias e eixos |
-| Tamboreamento | Verificar fixação e estado do tambor / Inspecionar motor e correia de transmissão / Verificar nível de abrasivo e estado das peças |
-| Acabamento | Simbólico — editar via acesso admin |
-| Externo | Simbólico — editar via acesso admin |
-| N/A | Simbólico — editar via acesso admin |
-| Inspeção | Simbólico — editar via acesso admin |
+## Organização
 
----
+Os itens são agrupados por:
 
-## Como editar o site
-
-1. Acesse github.com/jader-fluortech/manutencoes-fluortech
-2. Clique em `index.html`
-3. Clique no lápis ✏️
-4. Faça as alterações
-5. Clique em "Commit changes" → "Commit changes"
-6. Aguarde 2 minutos para o site atualizar
-
-## Como rodar scripts no Firebase
-
-1. Abra o site no navegador
-2. Pressione F12 → aba Console
-3. Cole o script e pressione Enter
-4. Se precisar escrever em máquinas, abra as regras temporariamente antes
-5. Sempre restaurar as regras padrão após terminar
-
-## Como adicionar novos anos no filtro do painel
-
-No `index.html`, procure o bloco:
-```html
-<option value="2026">2026</option>
-<option value="2027">2027</option>
+```text
+secao
 ```
-E adicione mais linhas seguindo o mesmo padrão.
+
+Cada item possui:
+
+```json
+{
+  "secao": "",
+  "texto": ""
+}
+```
+
+## Resultado
+
+Cada item pode ser marcado como:
+
+* OK
+* NOK
+
+Quando NOK:
+
+* Observação obrigatória
 
 ---
 
-## Pendências futuras
+# Assinatura Digital
 
-- PDF como link no email (requer Firebase Storage pago ou solução alternativa)
-- Checklists reais para setores: Acabamento, Externo, N/A, Inspeção (atualmente simbólicos)
-- Considerar migração para plano Blaze para autenticação avançada
+Implementada utilizando:
+
+```text
+HTML5 Canvas
+```
+
+Compatível com:
+
+* Mouse
+* Touchscreen
+* Smartphones
+* Tablets
+
+Armazenamento:
+
+```text
+Base64
+```
+
+---
+
+# Modal de Detalhes
+
+Disponível para gestores.
+
+Exibe:
+
+* Código do formulário
+* Máquina
+* Setor
+* Técnico
+* Tipo de manutenção
+* Data
+* Observações iniciais
+* Itens do checklist
+* Itens NOK
+* Observações NOK
+* Assinatura
+
+Permite download direto do PDF.
+
+---
+
+# Dashboard do Gestor
+
+Indicadores calculados:
+
+* Total de manutenções
+* Manutenções filtradas
+* Registros com NOK
+* Máquinas únicas atendidas
+
+---
+
+# Exportação CSV
+
+Formato:
+
+```text
+CSV
+```
+
+Separador:
+
+```text
+;
+```
+
+Campos exportados:
+
+* Código
+* Data/Hora
+* Máquina
+* Setor
+* Técnico
+* Tipo
+* Total de Itens
+* Itens OK
+* Itens NOK
+* Observações Iniciais
+* Detalhes dos Itens NOK
+
+---
+
+# Calendário Preventivo
+
+Cada máquina possui:
+
+* Próxima manutenção
+* Intervalo em meses
+
+O administrador pode:
+
+* Alterar datas
+* Alterar intervalos
+* Salvar alterações diretamente no Firestore
+
+---
+
+# Envio de Email
+
+Serviço:
+
+```text
+Brevo
+```
+
+Fluxo:
+
+1. Manutenção finalizada
+2. Registro salvo no Firestore
+3. PDF gerado
+4. Email enviado automaticamente
+5. PDF anexado ao email
+
+Conteúdo enviado:
+
+* Dados da manutenção
+* Código do formulário
+* PDF assinado
+
+---
+
+# Segurança Atual
+
+O sistema utiliza autenticação simples baseada em senha definida no frontend.
+
+Não utiliza:
+
+* Firebase Authentication
+* Controle granular de usuários
+* Perfis por banco de dados
+
+As senhas encontram-se diretamente no código-fonte.
+
+---
+
+# Como Atualizar o Sistema
+
+1. Abrir o repositório GitHub
+2. Editar o arquivo `index.html`
+3. Realizar commit
+4. Aguardar publicação automática do GitHub Pages
+
+---
+
+# Como Executar Scripts Firebase
+
+1. Abrir o sistema no navegador
+2. Pressionar F12
+3. Abrir Console
+4. Executar o script necessário
+5. Restaurar regras padrão após alterações administrativas
+
+---
+
+# Responsabilidade do Sistema
+
+Garantir rastreabilidade, padronização e armazenamento centralizado das atividades de manutenção industrial da Fluortech, reduzindo falhas operacionais e facilitando auditorias, análises históricas e controle preventivo dos equipamentos.
