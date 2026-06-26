@@ -1,0 +1,30 @@
+name: Notificações de Manutenção
+
+on:
+  schedule:
+    # Roda todo dia às 8h horário de Brasília (11h UTC)
+    - cron: '0 11 * * *'
+  workflow_dispatch: # Permite rodar manualmente pelo GitHub
+
+jobs:
+  notificar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Instalar dependências
+        run: npm install node-fetch@2
+
+      - name: Rodar script de notificações
+        env:
+          FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
+          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+          EMAILS_DESTINO: ${{ secrets.EMAILS_DESTINO }}
+        run: node notificacoes.js
