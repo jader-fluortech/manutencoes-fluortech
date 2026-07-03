@@ -181,7 +181,7 @@ GitHub → **Actions** → **Notificações de Manutenção** → **Run workflow
 | `FIREBASE_API_KEY` | AIzaSyDZadgIZLA4aOz33SQJDcxUgTrMKXwrf3Q |
 | `FIREBASE_PROJECT_ID` | manutencoes-fluortech |
 | `BREVO_API_KEY` | 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 |
-| `EMAILS_DESTINO` | jaderfilho@fluortech.com.br |
+| `EMAILS_DESTINO` | jaderfilho@fluortech.com.br | luiz.josue@fluortech.com.br |
 
 ---
 
