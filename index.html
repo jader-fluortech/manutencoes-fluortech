@@ -347,6 +347,7 @@
       <div class="admin-tab ativa" id="tab-lista" onclick="mostrarTabAdmin('lista')">📋 Máquinas</div>
       <div class="admin-tab" id="tab-nova" onclick="mostrarTabAdmin('nova')">➕ Nova</div>
       <div class="admin-tab" id="tab-calendario-admin" onclick="mostrarTabAdmin('calendario')">📅 Calendário</div>
+      <div class="admin-tab" id="tab-registros-admin" onclick="mostrarTabAdmin('registros')">🗂️ Registros</div>
     </div>
 
     <!-- Lista de máquinas -->
@@ -1282,7 +1283,8 @@
       const q = window._query(window._collection(window._db, 'manutencoes'), window._orderBy('dataHora', 'desc'));
       const snap = await window._getDocs(q);
       todosRegistros = [];
-      snap.forEach(d => todosRegistros.push({ id: d.id, ...d.data() }));
+      // Excluir arquivados da visualização normal
+      snap.forEach(d => { const data = d.data(); if (!data.arquivado) todosRegistros.push({ id: d.id, ...data }); });
       atualizarStats();
       renderizarTabela(todosRegistros);
     } catch (e) {
@@ -1423,12 +1425,12 @@
   function sairAdmin() { sessionStorage.clear(); irPara('tela-login'); }
 
   function mostrarTabAdmin(tab) {
-    ['lista','nova','calendario'].forEach(t => {
-      document.getElementById(`tab-${t === 'lista' ? 'lista' : t === 'nova' ? 'nova' : 'calendario-admin'}`).classList.toggle('ativa', t === tab);
-    });
+    const tabMap = { lista: 'tab-lista', nova: 'tab-nova', calendario: 'tab-calendario-admin', registros: 'tab-registros-admin' };
+    Object.entries(tabMap).forEach(([t, id]) => document.getElementById(id).classList.toggle('ativa', t === tab));
     document.getElementById('admin-lista').style.display = tab === 'lista' ? 'block' : 'none';
     document.getElementById('admin-form').style.display = tab === 'nova' ? 'block' : 'none';
     document.getElementById('admin-calendario').style.display = tab === 'calendario' ? 'block' : 'none';
+    document.getElementById('admin-registros').style.display = tab === 'registros' ? 'block' : 'none';
     if (tab === 'nova') {
       document.getElementById('admin-maquina-id').value = '';
       document.getElementById('admin-nome').value = '';
@@ -1438,6 +1440,7 @@
       renderizarChecklistAdmin([{ secao: 'Inspeção Geral', texto: '' }]);
     }
     if (tab === 'calendario') carregarCalendarioAdmin();
+    if (tab === 'registros') carregarRegistrosAdmin();
   }
 
   async function carregarMaquinasAdmin() {
@@ -1558,6 +1561,87 @@
     document.getElementById('tab-nova').textContent = '➕ Nova';
   }
 
+  // ===== REGISTROS ADMIN =====
+  let todosRegistrosAdmin = [];
+
+  async function carregarRegistrosAdmin() {
+    const tbody = document.getElementById('tabela-registros-admin');
+    tbody.innerHTML = '<tr><td colspan="7"><div class="loading ativo"><div class="spinner"></div>Carregando...</div></td></tr>';
+    try {
+      const q = window._query(window._collection(window._db, 'manutencoes'), window._orderBy('dataHora', 'desc'));
+      const snap = await window._getDocs(q);
+      todosRegistrosAdmin = [];
+      snap.forEach(d => todosRegistrosAdmin.push({ id: d.id, ...d.data() }));
+      renderizarRegistrosAdmin(todosRegistrosAdmin);
+    } catch (e) {
+      tbody.innerHTML = '<tr><td colspan="7" style="padding:20px;color:#e57373;text-align:center">Erro ao carregar.</td></tr>';
+    }
+  }
+
+  function renderizarRegistrosAdmin(lista) {
+    const tbody = document.getElementById('tabela-registros-admin');
+    const filtroStatus = document.getElementById('filtro-admin-status')?.value || 'ativos';
+    const filtrada = lista.filter(r => {
+      if (filtroStatus === 'ativos') return !r.arquivado;
+      if (filtroStatus === 'arquivados') return !!r.arquivado;
+      return true;
+    });
+    if (filtrada.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="7"><div class="sem-registros">📭 Nenhum registro encontrado.</div></td></tr>';
+      return;
+    }
+    tbody.innerHTML = filtrada.map(r => {
+      const arquivado = !!r.arquivado;
+      const rowStyle = arquivado ? 'background:rgba(0,0,0,0.04);opacity:0.7;' : '';
+      const statusBadge = arquivado
+        ? '<span style="background:#eee;color:#888;border-radius:4px;padding:2px 8px;font-size:0.75rem;font-weight:600">Arquivado</span>'
+        : '<span style="background:rgba(46,125,50,0.1);color:var(--cor-ok);border-radius:4px;padding:2px 8px;font-size:0.75rem;font-weight:600">Ativo</span>';
+      const btnAcao = arquivado
+        ? `<button class="btn-mini" onclick="desarquivarRegistro('${r.id}')" style="color:var(--cor-ok);border-color:var(--cor-ok)">↩ Restaurar</button>`
+        : `<button class="btn-mini" onclick="arquivarRegistro('${r.id}', '${(r.maquinaNome||'').replace(/'/g,"\'")}')">📦 Arquivar</button>`;
+      return `<tr style="${rowStyle}">
+        <td style="font-family:monospace;font-size:0.82rem;color:var(--cor-destaque)">${r.codigoFormulario || '-'}</td>
+        <td style="white-space:nowrap;font-size:0.82rem">${r.dataHoraLocal || '-'}</td>
+        <td><strong>${r.maquinaNome || '-'}</strong></td>
+        <td>${r.tecnicoNome || '-'}</td>
+        <td><span class="badge-tipo">${r.tipoManutencao || '-'}</span></td>
+        <td>${statusBadge}</td>
+        <td>${btnAcao}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  function filtrarRegistrosAdmin(busca) {
+    const q = (busca || '').toLowerCase();
+    const filtrada = todosRegistrosAdmin.filter(r =>
+      (r.maquinaNome || '').toLowerCase().includes(q) ||
+      (r.tecnicoNome || '').toLowerCase().includes(q) ||
+      (r.codigoFormulario || '').toLowerCase().includes(q)
+    );
+    renderizarRegistrosAdmin(filtrada);
+  }
+
+  async function arquivarRegistro(id, nome) {
+    if (!confirm(`Arquivar o registro "${nome}"?
+
+Ele sumirá das telas de Manutenção e Gestão, mas os dados ficam preservados no banco.`)) return;
+    try {
+      await window._updateDoc(window._doc(window._db, 'manutencoes', id), { arquivado: true });
+      mostrarToast('✅ Registro arquivado.');
+      await carregarRegistrosAdmin();
+      await carregarPainel();
+    } catch (e) { mostrarToast('Erro ao arquivar.'); }
+  }
+
+  async function desarquivarRegistro(id) {
+    try {
+      await window._updateDoc(window._doc(window._db, 'manutencoes', id), { arquivado: false });
+      mostrarToast('✅ Registro restaurado.');
+      await carregarRegistrosAdmin();
+      await carregarPainel();
+    } catch (e) { mostrarToast('Erro ao restaurar.'); }
+  }
+
   // ===== EXPORTAR EXCEL =====
   function exportarExcel() {
     const mes = document.getElementById('filtro-mes').value;
@@ -1650,6 +1734,9 @@
   window.abrirModal = abrirModal;
   window.fecharModal = fecharModal;
   window.filtrarCalendario = filtrarCalendario;
+  window.filtrarRegistrosAdmin = filtrarRegistrosAdmin;
+  window.arquivarRegistro = arquivarRegistro;
+  window.desarquivarRegistro = desarquivarRegistro;
   window.voltarDoCalendario = voltarDoCalendario;
   window.filtrarCalendarioAdmin = filtrarCalendarioAdmin;
   window.abrirModalData = abrirModalData;
