@@ -12,11 +12,11 @@
 
 | Arquivo | Função |
 |---|---|
-| `index.html` | Código completo do sistema (HTML + CSS + JS) |
+| `index.html` | Código completo do sistema (HTML + CSS + JS em um único arquivo) |
 | `logo.png` | Logo da Fluortech |
 | `PROJETO.md` | Esta documentação |
-| `notificacoes.js` | Script Node.js de notificações automáticas por email |
-| `.github/workflows/notificacoes.yml` | Workflow GitHub Actions (roda todo dia às 8h Brasília) |
+
+Observação: os arquivos `notificacoes.js` e `.github/workflows/notificacoes.yml` foram removidos — as notificações automáticas de calendário por email foram descontinuadas.
 
 ---
 
@@ -24,29 +24,42 @@
 
 | Perfil | Senha |
 |---|---|
-| Técnico | 1234 |
-| Gestor | 12345 |
+| Usuário (Manutenção + Gestão) | 12345 |
 | Admin | 123456 |
 
 Definidas no `index.html`:
 ```javascript
-const SENHA_TECNICO = '1234';
-const SENHA_GESTOR = '12345';
+const SENHA_USUARIO = '12345';
 const SENHA_ADMIN = '123456';
 ```
 
+O login foi unificado: uma única senha (12345) dá acesso às duas telas (Manutenção e Gestão). O admin continua separado (123456), acessível pelo link discreto "acesso admin" na tela de login.
+
 ---
 
-## Perfis de acesso
+## Estrutura de telas
 
-**Técnico** — Acessa a lista de máquinas, preenche o checklist, assina digitalmente e finaliza. Ao finalizar, o sistema salva no Firebase, envia email com PDF em anexo, e atualiza o calendário automaticamente se for manutenção preventiva. Também pode visualizar o calendário preventivo.
+Após login com a senha de usuário, a tela principal mostra duas abas no topo:
 
-**Gestor** — Acessa o painel com histórico de todas as manutenções, filtros por mês/ano/setor/tipo, visualização de detalhes, download de PDF, exportação para Excel e visualização do calendário preventivo.
+**🔧 Manutenção** — Lista de máquinas, busca, seleção de máquina para preencher checklist, e botão de acesso ao calendário. Equivale ao antigo perfil Técnico.
 
-**Admin** — Acessa via link discreto "acesso admin" na tela de login. Permite:
-- Adicionar, editar e excluir máquinas e checklists
-- Editar datas e intervalos do calendário preventivo
-- Sessão persiste ao recarregar a página (sessionStorage)
+**📊 Gestão** — Painel com histórico de manutenções, filtros (mês/ano/tipo/setor/busca), stats, exportação Excel e acesso ao calendário. Equivale ao antigo perfil Gestor. O painel recarrega automaticamente ao trocar para esta aba.
+
+**Admin** (senha própria) — CRUD de máquinas e checklists, edição do calendário preventivo, e aba de gerenciamento de registros (arquivar/restaurar).
+
+---
+
+## Tipos de manutenção e fluxo de preenchimento
+
+O sistema tem 4 tipos de manutenção, divididos em dois fluxos diferentes:
+
+**Preventiva e Preditiva** → usam o checklist tradicional da máquina (itens com OK/NOK, campo de observação para NOK) + assinatura.
+
+**Corretiva e Inspeção** → NÃO usam checklist. Mostram um campo de texto único e obrigatório com o label "Registre aqui as correções realizadas na máquina:" + assinatura. No banco, esse texto é salvo como um único item com `secao: 'Registro'`.
+
+No PDF:
+- Preventiva/Preditiva: tabela de itens com totais OK/NOK
+- Corretiva/Inspeção: bloco de texto corrido, sem tabela
 
 ---
 
@@ -61,16 +74,16 @@ Gerado automaticamente ao finalizar cada manutenção. Formato: `[PREFIXO][MÊS]
 | Corretiva | C | C0626B001 |
 | Inspeção | I | I0626H013 |
 
-Aparece em: tela de sucesso, PDF, email, painel do gestor (primeira coluna), modal de detalhes, exportação Excel.
+Aparece em: tela de sucesso, PDF, email, painel de gestão (primeira coluna), modal de detalhes, exportação Excel.
 
 ---
 
 ## Firebase
 
-**Projeto:** Manutencoes Fluortech (Plano Spark — gratuito)
+**Projeto:** Manutencoes Fluortech (Plano Blaze — pago)
 **Região:** southamerica-east1 (São Paulo)
 
-### Credenciais (já no index.html e nos secrets do GitHub)
+### Credenciais (no index.html)
 ```javascript
 apiKey: "AIzaSyDZadgIZLA4aOz33SQJDcxUgTrMKXwrf3Q"
 authDomain: "manutencoes-fluortech.firebaseapp.com"
@@ -94,13 +107,12 @@ appId: "1:524530859774:web:3d784e49984d45a85a2faf"
 - `itens` (array) — `{ texto, secao, resultado, observacao }`
 - `assinatura` (string base64)
 - `dataHora` (timestamp Firebase)
-- `dataHoraLocal` (string) — Ex: "26/06/2026, 11:30:00"
+- `dataHoraLocal` (string) — Ex: "16/07/2026, 11:30:00"
 - `codigoFormulario` (string) — Ex: "C0626E005"
+- `arquivado` (boolean, opcional) — quando `true`, o registro some das telas de Manutenção/Gestão mas continua no banco
 
 **calendario** — Cada documento tem o mesmo ID da máquina correspondente:
-- `maquinaId` (string)
-- `maquinaNome` (string)
-- `maquinaSetor` (string)
+- `maquinaId`, `maquinaNome`, `maquinaSetor`
 - `proximaManutencao` (string YYYY-MM-DD) — Ex: "2026-10-10"
 - `ultimaManutencao` (string YYYY-MM-DD ou null)
 - `intervaloMeses` (number) — padrão: 6
@@ -116,6 +128,7 @@ service cloud.firestore {
   }
 }
 ```
+Importante: todas as 3 coleções (`maquinas`, `manutencoes`, `calendario`) precisam estar listadas. Se uma faltar, as operações naquela coleção falham silenciosamente.
 
 ### Regras abertas (temporárias para scripts no console)
 ```
@@ -130,58 +143,34 @@ service cloud.firestore {
 
 ---
 
-## Calendário de Manutenções Preventivas
+## Segurança — Firebase App Check (reCAPTCHA v3)
 
-### Como funciona
-- Exclusivo para manutenções **Preventivas**
-- Ao finalizar uma manutenção preventiva, o calendário é atualizado automaticamente com a próxima data (+intervalo em meses a partir da data atual)
-- Admin pode editar datas e intervalos manualmente pela aba "Calendário" no acesso admin
-- Técnico e Gestor visualizam o calendário (somente leitura)
+O App Check protege o Firebase contra acessos que não venham do site real. Requisições de fora do site (scripts, Postman, console em outro site, uso das chaves em outro domínio) são bloqueadas quando o enforcement está ativo.
 
-### Status das máquinas
-| Status | Critério | Cor |
-|---|---|---|
-| Em dia | Mais de 10 dias para a próxima manutenção | Verde |
-| Próximos 10 dias | Entre 0 e 10 dias | Amarelo |
-| Atrasado | Data já passou | Vermelho (linha destacada) |
+**O que protege:** ataques externos usando as credenciais do Firebase.
+**O que NÃO protege:** alguém que já está logado no site usando o console F12 ali dentro (isso só Cloud Functions resolveria).
 
-### Configuração inicial
-- Todas as 66 máquinas inicializadas com data **10/10/2026**, intervalo de **6 meses**
+### Chaves do reCAPTCHA v3
+- **Chave do site** (pública, vai no `index.html`): `6LcqRlctAAAAACrHcpnKc_GGnvKFLiEc2z5sxITd`
+- **Chave secreta** (privada, vai no Firebase App Check): `6LcqRlctAAAAAM4IhN03ribPjAyDJPXmpC751_Mk`
 
-### Como inicializar o calendário (caso necessário)
-Rodar no console do site:
-```javascript
-await inicializarCalendarioMaquinas();
-console.log("✅ Calendário inicializado!");
-```
+Regra de ouro: a chave do site fica no CÓDIGO; a chave secreta fica no FIREBASE. São um par correspondente — se forem trocadas, dá erro 400 (appCheck/throttled).
 
----
+### Onde cada chave está configurada
+- **No `index.html`**: import do módulo `firebase-app-check.js` + `initializeAppCheck(app, { provider: new ReCaptchaV3Provider('CHAVE_DO_SITE'), isTokenAutoRefreshEnabled: true })`, logo após `initializeApp` e antes de `getFirestore`.
+- **No Firebase**: App Check → Apps → manutencoes-fluortech → campo "Chave reCAPTCHA do secret" (a chave secreta) + Vida útil do token: 1 hora.
+- **No reCAPTCHA admin** (google.com/recaptcha/admin): domínio `jader-fluortech.github.io` deve estar cadastrado.
 
-## Emails automáticos (GitHub Actions)
+### Modo de operação
+- **Monitorar** (atual): valida os tokens mas NÃO bloqueia nada. Seguro para produção.
+- **Aplicar/Enforce**: bloqueia requisições sem token válido. Ativar em Firebase → App Check → APIs → Cloud Firestore → Aplicar.
 
-### Agendamento
-Roda todo dia às **11h UTC (8h horário de Brasília)** via `.github/workflows/notificacoes.yml`
+Antes de ativar o Enforce, confirmar em App Check → APIs → Cloud Firestore que está em ~100% de requisições com token válido. Se algo travar após ativar, cancelar a imposição na mesma tela (reversível na hora).
 
-### Quando emails são enviados
-| Situação | Assunto |
-|---|---|
-| Máquinas com manutenção em ≤ 10 dias | ⚠️ Manutenções Preventivas em 10 dias |
-| Máquinas com manutenção em ≤ 5 dias | 🔴 URGENTE: Manutenções Preventivas em 5 dias |
-| Máquinas com manutenção atrasada | 🚨 Manutenções Preventivas ATRASADAS |
-| Máquinas sem manutenção há 30+ dias | ⚠️ Máquinas sem manutenção há 30+ dias |
+O reCAPTCHA v3 é invisível ao usuário — não aparece popup nem desafio. Funciona de qualquer dispositivo (não está ligado ao aparelho, e sim ao fato de a requisição partir do site real).
 
-Múltiplas máquinas na mesma condição são agrupadas em **um único email** com lista completa.
-
-### Como testar manualmente
-GitHub → **Actions** → **Notificações de Manutenção** → **Run workflow** → **Run workflow**
-
-### Secrets configurados no GitHub
-| Secret | Valor |
-|---|---|
-| `FIREBASE_API_KEY` | AIzaSyDZadgIZLA4aOz33SQJDcxUgTrMKXwrf3Q |
-| `FIREBASE_PROJECT_ID` | manutencoes-fluortech |
-| `BREVO_API_KEY` | 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 |
-| `EMAILS_DESTINO` | jaderfilho@fluortech.com.br | luiz.josue@fluortech.com.br |
+### Custo
+App Check é gratuito. reCAPTCHA v3 tem cota alta, não atingida em uso normal de fábrica. Não gera custo extra na mensalidade.
 
 ---
 
@@ -189,15 +178,44 @@ GitHub → **Actions** → **Notificações de Manutenção** → **Run workflow
 
 **Chave de API:** `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`
 
-**Emails que recebem os relatórios:** jaderfilho@fluortech.com.br
+**Emails que recebem os relatórios:**
+- jaderfilho@fluortech.com.br
+- luiz.josue@fluortech.com.br
 
-Para adicionar mais emails, editar no `index.html` e no secret `EMAILS_DESTINO` do GitHub:
+Para adicionar/remover emails, editar o array `EMAILS_DESTINO` no `index.html` (atenção: cada email entre aspas, separados por vírgula — vírgula faltando quebra todo o JavaScript).
+
+O único email automático que existe é o enviado ao finalizar um checklist: corpo HTML com resumo + PDF assinado em anexo. As notificações de calendário (10 dias, 5 dias, atrasado, 30 dias sem manutenção) foram descontinuadas.
+
+---
+
+## Calendário de Manutenções Preventivas
+
+- Exclusivo para manutenções Preventivas
+- Ao finalizar uma preventiva, a próxima data avança automaticamente (+intervalo em meses a partir da data atual), mesmo que tenha sido adiantada
+- Admin edita datas e intervalos pela aba "Calendário"
+- Usuário visualiza (somente leitura) pelas abas Manutenção e Gestão
+
+Status: Em dia (verde, +10 dias), Próximos 10 dias (amarelo), Atrasado (vermelho, linha destacada).
+
+Configuração inicial: todas as 66 máquinas com data 10/10/2026, intervalo 6 meses.
+
+Para reinicializar o calendário, rodar no console:
 ```javascript
-const EMAILS_DESTINO = [
-  'jaderfilho@fluortech.com.br',
-  // 'outro@fluortech.com.br',
-];
+await inicializarCalendarioMaquinas();
+console.log("✅ Calendário inicializado!");
 ```
+
+---
+
+## Gerenciamento de registros (soft delete)
+
+No acesso admin, aba "🗂️ Registros":
+- Lista todos os registros com busca e filtro por status (ativos/arquivados/todos)
+- Botão "Arquivar" → registro some das telas de Manutenção/Gestão mas fica no Firebase (campo `arquivado: true`)
+- Botão "Restaurar" → traz de volta (`arquivado: false`)
+- Registros arquivados aparecem acinzentados
+
+O `carregarPainel()` filtra registros com `arquivado: true`, então eles ficam invisíveis para o usuário comum.
 
 ---
 
@@ -290,20 +308,24 @@ const EMAILS_DESTINO = [
 | R004 | Retífica | Usinagem |
 | R005 | Esmeril Rebolo | Usinagem |
 
-Checklists com 666 itens detalhados salvos no Firebase. Atualizados em 22/06/2026.
+Checklists com 666 itens detalhados salvos no Firebase.
 
 ---
 
 ## Como editar o site
 
-1. Acesse github.com/jader-fluortech/manutencoes-fluortech
-2. Clique em `index.html` → lápis ✏️
-3. `Ctrl+A` → colar novo conteúdo → Commit changes
-4. Aguardar 2 minutos para o site atualizar
+1. github.com/jader-fluortech/manutencoes-fluortech → `index.html` → lápis ✏️
+2. `Ctrl+A` → colar novo conteúdo → Commit changes
+3. Aguardar ~2 minutos para o site atualizar
+
+## Como rodar scripts no console
+
+1. Abrir o site → F12 → aba Console → colar script → Enter
+2. Para escrever em coleções via console (fora do admin), abrir as regras temporariamente antes
+3. Restaurar as regras padrão após terminar
 
 ## Como exportar checklists atuais
 
-Rodar no console do site:
 ```javascript
 (async () => {
   const { collection, getDocs } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
@@ -317,25 +339,17 @@ Rodar no console do site:
     });
   });
   const a = document.createElement("a");
-  a.href = URL.createObjectURL(new Blob(["\uFEFF" + linhas.join("\n"), {type:"text/csv;charset=utf-8;"}]));
+  a.href = URL.createObjectURL(new Blob(["\uFEFF" + linhas.join("\n")], {type:"text/csv;charset=utf-8;"}));
   a.download = "maquinas_fluortech.csv"; a.click();
   console.log("✅ Exportado!");
 })();
 ```
 
-## Como adicionar novos anos no filtro do painel
-
-No `index.html`, procure:
-```html
-<option value="2027">2027</option>
-<option value="2028">2028</option>
-```
-E adicione mais linhas seguindo o mesmo padrão.
-
 ---
 
-## Pendências futuras
+## Pendências / ideias futuras
 
-- PDF como link no email (requer Firebase Storage pago)
-- Definir datas reais de manutenção para cada máquina (atualmente todas em 10/10/2026)
-- Considerar migração para plano Blaze para autenticação avançada
+- Ativar o enforcement do App Check (após confirmar 100% de tokens válidos)
+- Definir datas reais de manutenção preventiva para cada máquina (atualmente todas em 10/10/2026)
+- PDF como link no email (requer Firebase Storage)
+- Blindagem contra manipulação pelo próprio console: exigiria Cloud Functions (backend que valida antes de gravar) — avaliado e adiado por adicionar complexidade e exigir Firebase CLI para deploy
