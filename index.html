@@ -419,6 +419,33 @@
         </table>
       </div>
     </div>
+
+    <!-- Registros admin -->
+    <div id="admin-registros" style="display:none">
+      <p style="font-size:0.85rem;color:#666;margin-bottom:16px;background:var(--cor-fundo-interno);padding:10px 14px;border-radius:8px;">
+        🗂️ Arquivar um registro o oculta do sistema mas mantém os dados no Firebase. Registros arquivados aparecem com destaque cinza.
+      </p>
+      <div class="busca-wrapper" style="margin-bottom:12px">
+        <span class="icone-busca">🔍</span>
+        <input type="text" id="busca-registros-admin" placeholder="Buscar por máquina ou técnico..." oninput="filtrarRegistrosAdmin(this.value)" />
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+        <select id="filtro-admin-status" onchange="filtrarRegistrosAdmin(document.getElementById('busca-registros-admin').value)" style="padding:8px 12px;border:1px solid var(--cor-borda);border-radius:8px;font-size:0.85rem;background:var(--cor-fundo-card);color:var(--cor-texto)">
+          <option value="ativos">Somente ativos</option>
+          <option value="arquivados">Somente arquivados</option>
+          <option value="todos">Todos</option>
+        </select>
+      </div>
+      <div class="tabela-wrapper">
+        <table class="tabela-manutencoes">
+          <thead><tr>
+            <th>Código</th><th>Data/Hora</th><th>Máquina</th><th>Técnico</th><th>Tipo</th><th>Status</th><th>Ação</th>
+          </tr></thead>
+          <tbody id="tabela-registros-admin"></tbody>
+        </table>
+      </div>
+    </div>
+
   </div>
 </div>
 
