@@ -42,13 +42,12 @@
     .login-logo { text-align: center; margin-bottom: 28px; }
     .login-logo h2 { font-size: 1.3rem; color: var(--cor-destaque); }
     .login-logo p { font-size: 0.82rem; color: #6670A0; margin-top: 4px; }
-    .perfil-opcoes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-    .perfil-btn { background: var(--cor-fundo-interno); border: 2px solid var(--cor-borda); border-radius: 10px; padding: 16px 10px; cursor: pointer; text-align: center; transition: all 0.2s; }
-    .perfil-btn:hover { border-color: var(--cor-destaque); }
-    .perfil-btn.selecionado { border-color: var(--cor-destaque); background: rgba(17,29,92,0.08); }
-    .perfil-btn .perfil-icone { font-size: 28px; display: block; margin-bottom: 6px; }
-    .perfil-btn .perfil-label { font-size: 0.88rem; font-weight: 600; color: var(--cor-texto); }
-    .perfil-btn .perfil-desc { font-size: 0.72rem; color: #444; margin-top: 3px; }
+    /* ===== ABAS PRINCIPAIS ===== */
+    .abas-principais { display: flex; gap: 0; margin-bottom: 0; border-bottom: 2px solid var(--cor-borda); }
+    .aba-principal { flex: 1; padding: 14px 10px; background: var(--cor-fundo-card); border: none; cursor: pointer; font-size: 0.95rem; font-weight: 600; color: #666; text-align: center; transition: all 0.2s; border-bottom: 3px solid transparent; margin-bottom: -2px; }
+    .aba-principal:hover { color: var(--cor-destaque); background: var(--cor-fundo-interno); }
+    .aba-principal.ativa { color: var(--cor-destaque); border-bottom-color: var(--cor-destaque); background: #fff; }
+    .aba-principal .aba-icone { font-size: 22px; display: block; margin-bottom: 4px; }
 
     /* ===== FORMS ===== */
     .form-grupo { margin-bottom: 18px; }
@@ -282,18 +281,6 @@
         <h2>Sistema de Manutenções</h2>
         <p>Selecione seu perfil e insira a senha</p>
       </div>
-      <div class="perfil-opcoes">
-        <div class="perfil-btn" id="btn-tecnico" onclick="selecionarPerfil('tecnico')">
-          <span class="perfil-icone">🔧</span>
-          <div class="perfil-label">Técnico</div>
-          <div class="perfil-desc">Realizar checklist</div>
-        </div>
-        <div class="perfil-btn" id="btn-gestor" onclick="selecionarPerfil('gestor')">
-          <span class="perfil-icone">📊</span>
-          <div class="perfil-label">Gestor</div>
-          <div class="perfil-desc">Ver painel</div>
-        </div>
-      </div>
       <div class="form-grupo">
         <label>Senha</label>
         <input type="password" id="input-senha" placeholder="Digite a senha" onkeydown="if(event.key==='Enter') entrar()" />
@@ -434,19 +421,87 @@
   </div>
 </div>
 
-<!-- ===== TELA SELEÇÃO DE MÁQUINA ===== -->
-<div id="tela-maquinas" class="tela">
-  <div class="container">
-    <div class="instrucao">📋 Selecione a máquina.</div>
-    <div style="text-align:right;margin-bottom:10px">
-      <button class="btn-mini" onclick="abrirCalendario('tela-maquinas')" style="padding:6px 14px;font-size:0.82rem">📅 Calendário</button>
+<!-- ===== TELA PRINCIPAL (MANUTENÇÃO + GESTÃO) ===== -->
+<div id="tela-principal" class="tela">
+  <!-- Abas -->
+  <div class="abas-principais">
+    <button class="aba-principal ativa" id="aba-manutencao" onclick="trocarAba('manutencao')">
+      <span class="aba-icone">🔧</span>Manutenção
+    </button>
+    <button class="aba-principal" id="aba-gestao" onclick="trocarAba('gestao')">
+      <span class="aba-icone">📊</span>Gestão
+    </button>
+  </div>
+
+  <!-- Conteúdo: Manutenção -->
+  <div id="conteudo-manutencao">
+    <div class="container">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin:16px 0 12px">
+        <div class="instrucao" style="margin:0;flex:1">📋 Selecione a máquina.</div>
+        <button class="btn-mini" onclick="abrirCalendario('tela-principal')" style="padding:6px 14px;font-size:0.82rem;margin-left:10px;flex-shrink:0">📅 Calendário</button>
+      </div>
+      <div class="busca-wrapper">
+        <span class="icone-busca">🔍</span>
+        <input type="text" id="busca-maquina" placeholder="Buscar máquina..." oninput="filtrarMaquinas()" />
+      </div>
+      <div class="lista-maquinas" id="lista-maquinas">
+        <div class="loading ativo"><div class="spinner"></div>Carregando máquinas...</div>
+      </div>
     </div>
-    <div class="busca-wrapper">
-      <span class="icone-busca">🔍</span>
-      <input type="text" id="busca-maquina" placeholder="Buscar máquina..." oninput="filtrarMaquinas()" />
-    </div>
-    <div class="lista-maquinas" id="lista-maquinas">
-      <div class="loading ativo"><div class="spinner"></div>Carregando máquinas...</div>
+  </div>
+
+  <!-- Conteúdo: Gestão -->
+  <div id="conteudo-gestao" style="display:none">
+    <div class="container-wide">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin:16px 0 20px;flex-wrap:wrap;gap:10px">
+        <h2 style="font-size:1.2rem;color:var(--cor-destaque)">📊 Painel de Gestão</h2>
+        <button class="btn-mini" onclick="abrirCalendario('tela-principal')" style="padding:8px 16px;font-size:0.85rem">📅 Ver Calendário</button>
+      </div>
+      <div class="painel-stats" id="painel-stats">
+        <div class="stat-card"><div class="stat-numero" id="stat-total">—</div><div class="stat-label" id="label-total">Total de Manutenções</div></div>
+        <div class="stat-card"><div class="stat-numero" id="stat-mes">—</div><div class="stat-label" id="label-mes">No Mês</div></div>
+        <div class="stat-card"><div class="stat-numero" id="stat-nok" style="color:var(--cor-nok)">—</div><div class="stat-label" id="label-nok">Com Itens NOK</div></div>
+        <div class="stat-card"><div class="stat-numero" id="stat-maquinas">—</div><div class="stat-label" id="label-maquinas">Máquinas Atendidas</div></div>
+      </div>
+      <div class="filtros-painel">
+        <input type="text" id="filtro-busca" placeholder="🔍 Buscar por máquina ou técnico..." oninput="filtrarPainel()" />
+        <select id="filtro-mes" onchange="filtrarPainel()">
+          <option value="">Todos os meses</option>
+          <option value="01">Janeiro</option><option value="02">Fevereiro</option><option value="03">Março</option>
+          <option value="04">Abril</option><option value="05">Maio</option><option value="06">Junho</option>
+          <option value="07">Julho</option><option value="08">Agosto</option><option value="09">Setembro</option>
+          <option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option>
+        </select>
+        <select id="filtro-ano" onchange="filtrarPainel()">
+          <option value="">Todos os anos</option>
+          <option value="2025">2025</option><option value="2026">2026</option>
+          <option value="2027">2027</option><option value="2028">2028</option>
+        </select>
+        <select id="filtro-tipo" onchange="filtrarPainel()">
+          <option value="">Todos os tipos</option>
+          <option value="Preventiva">Preventiva</option><option value="Corretiva">Corretiva</option>
+          <option value="Preditiva">Preditiva</option><option value="Inspeção">Inspeção</option>
+        </select>
+        <select id="filtro-setor" onchange="filtrarPainel()">
+          <option value="">Todos os setores</option>
+          <option value="Moldagem">Moldagem</option><option value="Sinterização">Sinterização</option>
+          <option value="Usinagem">Usinagem</option><option value="Tamboreamento">Tamboreamento</option>
+        </select>
+      </div>
+      <div style="display:flex;justify-content:flex-end;margin-bottom:12px">
+        <button class="btn-mini" onclick="exportarExcel()" style="padding:8px 16px;font-size:0.88rem;background:var(--cor-destaque);color:#fff;border:none;border-radius:8px;cursor:pointer">📊 Exportar Excel</button>
+      </div>
+      <div class="tabela-wrapper">
+        <table class="tabela-manutencoes">
+          <thead><tr>
+            <th>Código</th><th>Data/Hora</th><th>Máquina</th><th>Setor</th>
+            <th>Técnico</th><th>Tipo</th><th>Resultado</th><th>Ações</th>
+          </tr></thead>
+          <tbody id="tabela-body">
+            <tr><td colspan="8"><div class="loading ativo"><div class="spinner"></div>Carregando registros...</div></td></tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </div>
@@ -454,7 +509,7 @@
 <!-- ===== TELA DADOS DO TÉCNICO ===== -->
 <div id="tela-tecnico" class="tela">
   <div class="container">
-    <button class="btn-voltar" onclick="irPara('tela-maquinas')">← Voltar</button>
+    <button class="btn-voltar" onclick="irPara('tela-principal')">← Voltar</button>
     <div class="maquina-header" id="header-maquina-tecnico"></div>
     <div class="form-grupo">
       <label>Seu nome</label>
@@ -518,60 +573,7 @@
   </div>
 </div>
 
-<!-- ===== TELA PAINEL GESTOR ===== -->
-<div id="tela-painel" class="tela">
-  <div class="container-wide">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px">
-      <h2 style="font-size:1.2rem;color:var(--cor-destaque)">📊 Painel do Gestor</h2>
-      <button class="btn-mini" onclick="abrirCalendario('tela-painel')" style="padding:8px 16px;font-size:0.85rem">📅 Ver Calendário</button>
-    </div>
-    <div class="painel-stats" id="painel-stats">
-      <div class="stat-card"><div class="stat-numero" id="stat-total">—</div><div class="stat-label" id="label-total">Total de Manutenções</div></div>
-      <div class="stat-card"><div class="stat-numero" id="stat-mes">—</div><div class="stat-label" id="label-mes">No Mês</div></div>
-      <div class="stat-card"><div class="stat-numero" id="stat-nok" style="color:var(--cor-nok)">—</div><div class="stat-label" id="label-nok">Com Itens NOK</div></div>
-      <div class="stat-card"><div class="stat-numero" id="stat-maquinas">—</div><div class="stat-label" id="label-maquinas">Máquinas Atendidas</div></div>
-    </div>
-    <div class="filtros-painel">
-      <input type="text" id="filtro-busca" placeholder="🔍 Buscar por máquina ou técnico..." oninput="filtrarPainel()" />
-      <select id="filtro-mes" onchange="filtrarPainel()">
-        <option value="">Todos os meses</option>
-        <option value="01">Janeiro</option><option value="02">Fevereiro</option><option value="03">Março</option>
-        <option value="04">Abril</option><option value="05">Maio</option><option value="06">Junho</option>
-        <option value="07">Julho</option><option value="08">Agosto</option><option value="09">Setembro</option>
-        <option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option>
-      </select>
-      <select id="filtro-ano" onchange="filtrarPainel()">
-        <option value="">Todos os anos</option>
-        <option value="2025">2025</option><option value="2026">2026</option>
-        <option value="2027">2027</option><option value="2028">2028</option>
-      </select>
-      <select id="filtro-tipo" onchange="filtrarPainel()">
-        <option value="">Todos os tipos</option>
-        <option value="Preventiva">Preventiva</option><option value="Corretiva">Corretiva</option>
-        <option value="Preditiva">Preditiva</option><option value="Inspeção">Inspeção</option>
-      </select>
-      <select id="filtro-setor" onchange="filtrarPainel()">
-        <option value="">Todos os setores</option>
-        <option value="Moldagem">Moldagem</option><option value="Sinterização">Sinterização</option>
-        <option value="Usinagem">Usinagem</option><option value="Tamboreamento">Tamboreamento</option>
-      </select>
-    </div>
-    <div style="display:flex;justify-content:flex-end;margin-bottom:12px">
-      <button class="btn-mini" onclick="exportarExcel()" style="padding:8px 16px;font-size:0.88rem;background:var(--cor-destaque);color:#fff;border:none;border-radius:8px;cursor:pointer">📊 Exportar Excel</button>
-    </div>
-    <div class="tabela-wrapper">
-      <table class="tabela-manutencoes">
-        <thead><tr>
-          <th>Código</th><th>Data/Hora</th><th>Máquina</th><th>Setor</th>
-          <th>Técnico</th><th>Tipo</th><th>Resultado</th><th>Ações</th>
-        </tr></thead>
-        <tbody id="tabela-body">
-          <tr><td colspan="8"><div class="loading ativo"><div class="spinner"></div>Carregando registros...</div></td></tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-</div>
+
 
 <!-- ===== TELA CALENDÁRIO ===== -->
 <div id="tela-calendario" class="tela">
@@ -684,8 +686,7 @@
 </script>
 
 <script>
-  const SENHA_TECNICO = '1234';
-  const SENHA_GESTOR = '12345';
+  const SENHA_USUARIO = '12345';
   const SENHA_ADMIN = '123456';
   const BREVO_API_KEY = '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';
   const EMAILS_DESTINO = [
@@ -703,7 +704,7 @@
   let registroModal = null;
   let dadosCalendario = [];
   let maquinaEditandoData = null;
-  let telaAnteriorCalendario = 'tela-painel';
+  let telaAnteriorCalendario = 'tela-principal';
 
   window.addEventListener('load', async () => {
     if (window._restaurarSessao && window._perfilSessao) {
@@ -713,49 +714,45 @@
         document.getElementById('badge-perfil').textContent = '🔐 Admin';
         await carregarMaquinasAdmin();
         irPara('tela-admin');
-      } else if (perfilSelecionado === 'tecnico') {
-        document.getElementById('badge-perfil').textContent = '🔧 Técnico';
-        await carregarMaquinas();
-        irPara('tela-maquinas');
       } else {
-        document.getElementById('badge-perfil').textContent = '📊 Gestor';
+        document.getElementById('badge-perfil').textContent = '⚙️ Fluortech';
+        await carregarMaquinas();
         await carregarPainel();
-        irPara('tela-painel');
+        irPara('tela-principal');
       }
     }
   });
 
   // ===== LOGIN =====
-  function selecionarPerfil(perfil) {
-    perfilSelecionado = perfil;
-    document.getElementById('btn-tecnico').classList.toggle('selecionado', perfil === 'tecnico');
-    document.getElementById('btn-gestor').classList.toggle('selecionado', perfil === 'gestor');
-    document.getElementById('input-senha').focus();
-  }
-
   function entrar() {
     const erro = document.getElementById('erro-login');
     erro.classList.remove('visivel');
-    if (!perfilSelecionado) { mostrarToast('Selecione Técnico ou Gestor.'); return; }
     const senha = document.getElementById('input-senha').value;
-    const senhaCorreta = perfilSelecionado === 'tecnico' ? SENHA_TECNICO : SENHA_GESTOR;
-    if (senha !== senhaCorreta) { erro.classList.add('visivel'); return; }
+    if (senha !== SENHA_USUARIO) { erro.classList.add('visivel'); return; }
+    perfilSelecionado = 'usuario';
     document.getElementById('header-right').style.display = 'flex';
-    document.getElementById('badge-perfil').textContent = perfilSelecionado === 'tecnico' ? '🔧 Técnico' : '📊 Gestor';
-    sessionStorage.setItem('fl_perfil', perfilSelecionado);
+    document.getElementById('badge-perfil').textContent = '⚙️ Fluortech';
+    sessionStorage.setItem('fl_perfil', 'usuario');
     sessionStorage.setItem('fl_logado', '1');
-    if (perfilSelecionado === 'tecnico') { carregarMaquinas(); irPara('tela-maquinas'); }
-    else { carregarPainel(); irPara('tela-painel'); }
+    carregarMaquinas();
+    carregarPainel();
+    irPara('tela-principal');
   }
 
   function sair() {
     perfilSelecionado = null; maquinaSelecionada = null; respostas = {}; dadosSalvos = null;
     sessionStorage.clear();
     document.getElementById('input-senha').value = '';
-    document.getElementById('btn-tecnico').classList.remove('selecionado');
-    document.getElementById('btn-gestor').classList.remove('selecionado');
     document.getElementById('header-right').style.display = 'none';
     irPara('tela-login');
+  }
+
+  // ===== ABAS =====
+  function trocarAba(aba) {
+    document.getElementById('aba-manutencao').classList.toggle('ativa', aba === 'manutencao');
+    document.getElementById('aba-gestao').classList.toggle('ativa', aba === 'gestao');
+    document.getElementById('conteudo-manutencao').style.display = aba === 'manutencao' ? 'block' : 'none';
+    document.getElementById('conteudo-gestao').style.display = aba === 'gestao' ? 'block' : 'none';
   }
 
   // ===== NAVEGAÇÃO =====
@@ -1609,7 +1606,8 @@
     document.getElementById('obs-inicial').value = '';
     document.getElementById('busca-maquina').value = '';
     renderizarMaquinas(todasMaquinas);
-    irPara('tela-maquinas');
+    trocarAba('manutencao');
+    irPara('tela-principal');
   }
 
   // ===== TOAST =====
@@ -1621,8 +1619,8 @@
   }
 
   // ===== EXPOR GLOBALMENTE =====
-  window.selecionarPerfil = selecionarPerfil;
   window.entrar = entrar;
+  window.trocarAba = trocarAba;
   window.sair = sair;
   window.irPara = irPara;
   window.filtrarMaquinas = filtrarMaquinas;
@@ -1660,7 +1658,7 @@
 
   // Expor função para acesso ao calendário a partir do menu
   window.abrirCalendario = function(telaOrigem) {
-    telaAnteriorCalendario = telaOrigem || 'tela-painel';
+    telaAnteriorCalendario = telaOrigem || 'tela-principal';
     carregarCalendario();
     irPara('tela-calendario');
   };
