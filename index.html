@@ -781,6 +781,7 @@
     document.getElementById('aba-gestao').classList.toggle('ativa', aba === 'gestao');
     document.getElementById('conteudo-manutencao').style.display = aba === 'manutencao' ? 'block' : 'none';
     document.getElementById('conteudo-gestao').style.display = aba === 'gestao' ? 'block' : 'none';
+    if (aba === 'gestao') carregarPainel();
   }
 
   // ===== NAVEGAÇÃO =====
