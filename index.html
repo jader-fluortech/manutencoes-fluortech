@@ -675,6 +675,7 @@
 <!-- ===== FIREBASE ===== -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app-check.js";
   import { getFirestore, collection, getDocs, addDoc, serverTimestamp, orderBy, query, doc, deleteDoc, setDoc, getDoc, updateDoc }
     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
@@ -688,6 +689,13 @@
   };
 
   const app = initializeApp(firebaseConfig);
+
+  // App Check — protege o Firebase contra acessos de fora do site
+  initializeAppCheck(app, {
+    provider: new ReCaptchaV3Provider('6LcqRlctAAAAACrHcpnKc_GGnvKFLiEc2z5sxITd'),
+    isTokenAutoRefreshEnabled: true
+  });
+
   const db = getFirestore(app);
 
   window._db = db;
